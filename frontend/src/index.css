@@ -2,114 +2,321 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+:root {
+    --atl-bg: #020402;
+    --atl-surface: #060A06;
+    --atl-primary: #00FF41;
+    --atl-secondary: #00FFFF;
+    --atl-glitch: #FF0055;
+    --atl-border: rgba(0, 255, 65, 0.3);
+    --atl-border-glow: rgba(0, 255, 65, 0.8);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body, #root {
     margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
+    padding: 0;
+    background: var(--atl-bg);
+    color: #ffffff;
+    font-family: "JetBrains Mono", "Share Tech Mono", ui-monospace, monospace;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-    font-family:
-        source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+body {
+    overflow-x: hidden;
 }
 
-@layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
-    }
-    .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
+::selection {
+    background: var(--atl-primary);
+    color: #000;
 }
 
-@layer base {
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
+/* Thin neon scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #020402; }
+::-webkit-scrollbar-thumb { background: rgba(0, 255, 65, 0.4); }
+::-webkit-scrollbar-thumb:hover { background: var(--atl-primary); }
+
+/* ============ CRT scanlines overlay ============ */
+.atl-scanlines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0,
+        rgba(0, 0, 0, 0) 2px,
+        rgba(0, 0, 0, 0.18) 3px,
+        rgba(0, 0, 0, 0) 4px
+    );
+    mix-blend-mode: multiply;
+}
+.atl-scanlines::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.55) 100%);
 }
 
-@layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
-    }
+/* ============ Matrix rain canvas ============ */
+.atl-rain {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.35;
+    pointer-events: none;
+}
 
-    [data-debug-wrapper="true"] > * {
-        margin-left: inherit;
-        margin-right: inherit;
-        margin-top: inherit;
-        margin-bottom: inherit;
-        padding-left: inherit;
-        padding-right: inherit;
-        padding-top: inherit;
-        padding-bottom: inherit;
-        column-gap: inherit;
-        row-gap: inherit;
-        gap: inherit;
-        border-left-width: inherit;
-        border-right-width: inherit;
-        border-top-width: inherit;
-        border-bottom-width: inherit;
-        border-left-style: inherit;
-        border-right-style: inherit;
-        border-top-style: inherit;
-        border-bottom-style: inherit;
-        border-left-color: inherit;
-        border-right-color: inherit;
-        border-top-color: inherit;
-        border-bottom-color: inherit;
-    }
+/* ============ Glitch text effect ============ */
+.atl-glitch {
+    position: relative;
+    color: #fff;
+    text-shadow: 0 0 18px rgba(0, 255, 65, 0.5);
+}
+.atl-glitch::before,
+.atl-glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0; width: 100%;
+    overflow: hidden;
+}
+.atl-glitch::before {
+    color: var(--atl-glitch);
+    animation: atl-glitch-anim-1 3s infinite linear alternate-reverse;
+    clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    transform: translate(0, 0);
+}
+.atl-glitch::after {
+    color: var(--atl-secondary);
+    animation: atl-glitch-anim-2 2.5s infinite linear alternate-reverse;
+    clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+}
+@keyframes atl-glitch-anim-1 {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 1px); }
+    40% { transform: translate(-1px, -1px); }
+    60% { transform: translate(2px, 1px); }
+    80% { transform: translate(1px, -2px); }
+    100% { transform: translate(0); }
+}
+@keyframes atl-glitch-anim-2 {
+    0% { transform: translate(0); }
+    25% { transform: translate(1px, 2px); }
+    50% { transform: translate(-1px, 1px); }
+    75% { transform: translate(2px, -1px); }
+    100% { transform: translate(0); }
+}
+
+/* ============ Terminal card ============ */
+.atl-card {
+    position: relative;
+    background: linear-gradient(180deg, rgba(0, 255, 65, 0.03), rgba(0, 0, 0, 0.4));
+    border: 1px solid var(--atl-border);
+    padding: 1.5rem;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.atl-card:hover {
+    border-color: var(--atl-border-glow);
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.35), inset 0 0 25px rgba(0, 255, 65, 0.05);
+}
+
+/* corner brackets */
+.atl-card::before,
+.atl-card::after {
+    content: "";
+    position: absolute;
+    width: 14px; height: 14px;
+    border: 2px solid var(--atl-primary);
+    opacity: 0.9;
+}
+.atl-card::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.atl-card::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+.atl-bracket-tr {
+    position: absolute;
+    top: -1px; right: -1px;
+    width: 14px; height: 14px;
+    border: 2px solid var(--atl-primary);
+    border-left: none; border-bottom: none;
+    opacity: 0.9;
+}
+.atl-bracket-bl {
+    position: absolute;
+    bottom: -1px; left: -1px;
+    width: 14px; height: 14px;
+    border: 2px solid var(--atl-primary);
+    border-right: none; border-top: none;
+    opacity: 0.9;
+}
+
+/* ============ Terminal button ============ */
+.atl-btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.85rem 1.6rem;
+    background: transparent;
+    border: 1.5px solid var(--atl-primary);
+    color: var(--atl-primary);
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+}
+.atl-btn:hover {
+    background: var(--atl-primary);
+    color: #000;
+    box-shadow: 0 0 24px rgba(0, 255, 65, 0.6);
+}
+.atl-btn--ghost {
+    border-color: rgba(0, 255, 255, 0.6);
+    color: var(--atl-secondary);
+}
+.atl-btn--ghost:hover {
+    background: var(--atl-secondary);
+    color: #000;
+    box-shadow: 0 0 24px rgba(0, 255, 255, 0.5);
+}
+
+/* ============ Pulse dot (verified indicator) ============ */
+.atl-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: var(--atl-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--atl-primary);
+    animation: atl-pulse 1.6s ease-in-out infinite;
+}
+@keyframes atl-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* ============ Grid bg ============ */
+.atl-grid-bg {
+    background-image:
+        linear-gradient(rgba(0, 255, 65, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 65, 0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+}
+
+/* ============ Text utilities ============ */
+.atl-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    color: rgba(0, 255, 65, 0.75);
+    font-family: "JetBrains Mono", monospace;
+}
+.atl-value {
+    font-family: "VT323", "Share Tech Mono", monospace;
+    font-size: 2.4rem;
+    line-height: 1;
+    color: var(--atl-primary);
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 14px rgba(0, 255, 65, 0.45);
+}
+.atl-mono {
+    font-family: "Share Tech Mono", "JetBrains Mono", monospace;
+}
+.atl-hash {
+    font-family: "Share Tech Mono", monospace;
+    color: rgba(0, 255, 255, 0.9);
+    word-break: break-all;
+    letter-spacing: 0.05em;
+}
+
+/* ============ Marquee / ticker ============ */
+.atl-ticker {
+    display: flex;
+    overflow: hidden;
+    gap: 3rem;
+    white-space: nowrap;
+    border-top: 1px solid var(--atl-border);
+    border-bottom: 1px solid var(--atl-border);
+    background: rgba(0, 255, 65, 0.03);
+}
+.atl-ticker__track {
+    display: inline-flex;
+    gap: 3rem;
+    padding: 0.75rem 0;
+    animation: atl-marquee 38s linear infinite;
+    flex-shrink: 0;
+}
+@keyframes atl-marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+/* ============ Shimmer/sweep line ============ */
+.atl-sweep {
+    position: relative;
+    overflow: hidden;
+}
+.atl-sweep::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.15), transparent);
+    animation: atl-sweep 4s linear infinite;
+}
+@keyframes atl-sweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* ============ Section divider ============ */
+.atl-divider {
+    display: flex; align-items: center; gap: 1rem;
+    color: rgba(0, 255, 65, 0.5);
+    font-family: "Share Tech Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+.atl-divider::before,
+.atl-divider::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.4), transparent);
+}
+
+/* flicker */
+.atl-flicker {
+    animation: atl-flicker 4s infinite;
+}
+@keyframes atl-flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+    20%, 22%, 24%, 55% { opacity: 0.4; }
+}
+
+/* small caps title */
+.atl-sectiontitle {
+    font-family: "VT323", monospace;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: #fff;
+    text-shadow: 0 0 14px rgba(0, 255, 65, 0.25);
+}
+
+/* Progress bar */
+.atl-progress {
+    position: relative;
+    width: 100%; height: 8px;
+    background: rgba(0, 255, 65, 0.08);
+    border: 1px solid rgba(0, 255, 65, 0.25);
+}
+.atl-progress__fill {
+    position: absolute; inset: 0 auto 0 0;
+    background: linear-gradient(90deg, #00FF41, #00FFFF);
+    box-shadow: 0 0 14px rgba(0, 255, 65, 0.6);
 }
