@@ -1,0 +1,96 @@
+{
+  "project_name": "Atmospheric Truth Layer v1.0.0-minted",
+  "theme_and_archetype": {
+    "theme": "DARK",
+    "archetype": "7 (Electric & Neon)",
+    "rationale": "Explicit user request for 'matrix 3d style', cyberpunk, green/cyan accents on black. Needs to feel like a live cryptographic command center."
+  },
+  "color_palette": {
+    "background": "#020402",
+    "surface": "#060A06",
+    "surface_glass": "rgba(0, 255, 65, 0.05)",
+    "primary": "#00FF41",
+    "secondary": "#00FFFF",
+    "accent_glitch": "#FF0055",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "rgba(0, 255, 65, 0.8)",
+    "text_muted": "rgba(255, 255, 255, 0.5)",
+    "border": "rgba(0, 255, 65, 0.3)",
+    "border_glow": "rgba(0, 255, 65, 0.8)"
+  },
+  "typography": {
+    "primary_font": "JetBrains Mono, monospace",
+    "secondary_font": "Share Tech Mono, monospace",
+    "display_font": "VT323, monospace",
+    "headings": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tighter uppercase text-primary font-bold",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight text-white uppercase",
+      "h3": "text-xl sm:text-2xl text-secondary uppercase tracking-[0.1em]"
+    },
+    "body": "text-base text-text_muted font-mono leading-relaxed",
+    "data_values": "text-3xl sm:text-4xl font-display text-primary tracking-widest",
+    "labels": "text-xs uppercase tracking-[0.2em] text-text_secondary"
+  },
+  "layout_and_spacing": {
+    "philosophy": "Terminal / Command Center grid. High density of information grouped in strict technical borders.",
+    "container_padding": "p-6 sm:p-8 lg:p-12",
+    "grid_system": {
+      "mode": "Control Room Grid (Dense, Data Correlation)",
+      "structure": "grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6",
+      "borders": "border-collapse style, with bright 1px green borders to signify system blocks."
+    }
+  },
+  "surfaces_and_components": {
+    "global_effects": [
+      "CRT Scanlines: A fixed pointer-events-none overlay with a repeating linear gradient of 1px black/transparent lines at 10% opacity.",
+      "Matrix Digital Rain: A pure HTML5 Canvas running in the background behind everything, rendering falling green characters."
+    ],
+    "cards": {
+      "style": "Retro-Futurism / Terminal Look",
+      "background": "bg-[#060A06]",
+      "border": "border border-primary/30",
+      "hover": "hover:border-primary hover:shadow-[0_0_15px_rgba(0,255,65,0.4)] transition-all duration-300",
+      "padding": "p-6"
+    },
+    "buttons": {
+      "style": "Cyberpunk terminal button. Hard edges, no border-radius.",
+      "background": "bg-transparent",
+      "border": "border-2 border-primary",
+      "text": "text-primary uppercase tracking-widest text-sm font-bold",
+      "hover": "hover:bg-primary hover:text-black hover:shadow-[0_0_20px_rgba(0,255,65,0.6)] transition-all"
+    }
+  },
+  "media": {
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1761599821310-da0d6356b4f3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTF8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGdyZWVuJTIwdGVjaCUyMGNpcmN1aXR8ZW58MHx8fHwxNzc3NTgzNzM5fDA&ixlib=rb-4.1.0&q=85",
+        "category": "texture",
+        "description": "Abstract green digital pattern. Use this as a low-opacity overlay (mix-blend-screen) inside the Witness Nodes cards or consensus visualizer."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1684610529682-553625a1ffed?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHwzfHxob2xvZ3JhcGhpYyUyMGVhcnRoJTIwZ2xvYmUlMjBkYXJrfGVufDB8fHx8MTc3NzU4Mzc1MHww&ixlib=rb-4.1.0&q=85",
+        "category": "3d_texture",
+        "description": "Wireframe sphere texture. Use as inspiration or direct map for the 3D Earth globe if a texture map is preferred over wireframe geometry."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1676944229914-2194fdafd024?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzN8MHwxfHNlYXJjaHwyfHxzYXRlbGxpdGUlMjBpbiUyMHNwYWNlfGVufDB8fHx8MTc3NzU4Mzc1MHww&ixlib=rb-4.1.0&q=85",
+        "category": "satellite_image",
+        "description": "Space satellite rendering. Use in the Witness Ledger / Satellites section to represent BOM, Himawari-8, etc."
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. FRAMEWORK & THEME: Implement a Dark Mode only, Matrix-Cyberpunk aesthetic using React, Tailwind CSS, and Framer Motion. The UI should resemble a hacker's terminal or a high-end cryptographic command center.",
+    "2. MATRIX RAIN CANVAS: Implement a global background canvas (`z-index: -10`) that draws falling green characters (the classic Matrix digital rain effect). Keep opacity subtle (e.g., 0.15) so it doesn't overpower text.",
+    "3. 3D HERO VISUAL (CRITICAL): Use `react-three-fiber` and `drei` to render a 3D Earth globe. Use a `<sphereGeometry>` with a `<meshBasicMaterial wireframe color='#00FF41' />` to give it a holographic look. Add 4 smaller orbiting objects (boxes or spheres) representing the 4 satellites (BOM, Himawari-8, GOES-16, Meteosat), with cyan/green glowing materials. Position this 3D canvas prominently in the hero section alongside or behind the main typography.",
+    "4. ANIMATED COUNTERS: Use `framer-motion` or React count-up hooks for the live-ticking engines. The values (e.g., Engine 365-Days: 37,445,846) should constantly increment rapidly in real-time to simulate active cryptographic processing.",
+    "5. DATA CARDS (WITNESS NODES): Create 4 distinct cards for the satellites. Include their names, 'VERIFIED' glowing badges, live hash strings (random hex codes updating via interval), and use the `satellite_image` provided in the media section.",
+    "6. MINTING CERTIFICATE: Design a prominent, bordered section for the Genesis Timestamp (2026-04-23T07:53:50.5144990+10:00). Make it look like a cryptographic cryptographic ledger entry with glowing borders.",
+    "7. GLITCH EFFECTS: Apply CSS-based glitch animations to the H1 ('Atmospheric Truth Layer v1.0.0-minted') and key metrics. Use keyframes to slightly shift text shadow (red/cyan) and translate randomly.",
+    "8. SERIES A SECTION: Present the financial metrics ($2.5M ask, $12.5M post-money, $3.18M Year 1 revenue) in a highly technical 'data readout' format rather than a standard corporate layout.",
+    "9. SCANLINES OVERLAY: Add a `pointer-events-none` `div` covering the viewport with a CSS repeating linear gradient to simulate CRT monitor scanlines.",
+    "10. FOOTER: Center the quote 'The sky doesn't lie. Satellites don't sleep. Math doesn't break.' in glowing cyan text.",
+    "11. NO SHADCN COMPONENTS: Do not rely on soft Shadcn cards. Use raw HTML/Tailwind for harsh, 1px bordered, square-cornered elements.",
+    "12. Ensure all interactive and data-displaying elements have a `data-testid` attribute."
+  ]
+}
