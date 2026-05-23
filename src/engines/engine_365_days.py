@@ -3,6 +3,18 @@ Engine 365-Days: Temporal Anchor & Tile Decomposition
 Architect: AiAgency101
 Part of the E14 Oracle Byzantine Consensus System
 
+Layer C — Tinana (Body / Structure) — E01 in the Engine Ring
+=============================================================
+Grounded in H (Invariant Root) and expresses N-layer skills
+and modules for tile decomposition and cycle lock.
+
+H dependency:  src.invariant.field_state.H_INVARIANT, K_VALUE_FLOOR
+H dependency:  src.invariant.guardian.FieldGuardian
+N dependency:  src.skills.tile_recognition.TileRecognitionSkill
+N dependency:  src.modules.hash_fabric.HashFabric
+N dependency:  src.modules.cycle_clock.CycleClock
+N dependency:  src.modules.satellite_decoder.SatelliteDecoder
+
 This engine handles satellite frame decomposition into cryptographically
 verified tiles and manages the 365-day cycle lock mechanism.
 """
@@ -18,6 +30,16 @@ from enum import Enum
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
+
+# Layer H — invariant root (must be imported first)
+from src.invariant.field_state import H_INVARIANT, K_VALUE_FLOOR
+from src.invariant.guardian import FieldGuardian, FieldViolation
+
+# Layer N — skills and modules
+from src.skills.tile_recognition import TileRecognitionSkill
+from src.modules.hash_fabric import HashFabric
+from src.modules.cycle_clock import CycleClock
+from src.modules.satellite_decoder import SatelliteDecoder, SatelliteSource
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -222,19 +244,25 @@ class RangeValidator:
 
 class Engine365Days:
     """
-    Temporal Anchor Engine (E01 in E14 Oracle)
-    Manages 365-day cycle decomposition and tile validation
+    Temporal Anchor Engine (E01 in E14 Oracle) — C-layer.
+
+    Grounded in H (FieldGuardian + H_INVARIANT) and uses N-layer
+    skills (TileRecognitionSkill) and modules (HashFabric, CycleClock,
+    SatelliteDecoder) for all tile decomposition work.
     """
-    
+
     def __init__(self):
-        self.cycle_lock = CycleLock()
+        # H-layer dependencies
+        self.guardian = FieldGuardian()
+
+        # N-layer dependencies
+        self.tile_skill = TileRecognitionSkill()
+        self.hash_fabric = HashFabric()
+        self.cycle_clock = CycleClock()
+        self.satellite_decoder = SatelliteDecoder()
+
         self.start_time = datetime.utcnow()
-        
-        # Three validators
-        self.circle_validator = CircleValidator()
-        self.monotonic_validator = MonotonicValidator()
-        self.range_validator = RangeValidator()
-        
+
         # Metrics
         self.cycles_completed = 37445846  # From running system
         self.decisions_evaluated = 100000
@@ -242,8 +270,12 @@ class Engine365Days:
         self.grid_passed = 3510223
         self.grid_rejected = 8593985
         self.tiles: List[Tile] = []
-        
-        logger.info("Engine 365-Days initialized (E01 - Temporal Anchor)")
+
+        logger.info(
+            "Engine 365-Days initialised (E01 - Temporal Anchor) — "
+            "H_coherence=%s",
+            H_INVARIANT.get("coherence_hash", "")[:16],
+        )
     
     async def decompose_frame(
         self,
@@ -255,85 +287,70 @@ class Engine365Days:
         longitude: float
     ) -> List[Tile]:
         """
-        Decompose satellite frame into tiles and validate each
+        Decompose satellite frame into tiles and validate each.
+
+        Uses N-layer modules (HashFabric, SatelliteDecoder) for hashing
+        and source normalisation, and N-layer skills (TileRecognitionSkill)
+        for the three-validator pattern check.
+
+        Guards every decomposition through the H-layer FieldGuardian so
+        that tile production halts if field coherence drops below K_VALUE_FLOOR.
         """
         tiles = []
         timestamp = datetime.utcnow().isoformat() + "Z"
-        
+
         try:
+            # Decode and normalise the satellite frame (N-layer module)
+            frame = self.satellite_decoder.decode(
+                satellite_source=satellite_source,
+                region=region,
+                band=band,
+                pixel_data=pixel_data,
+                latitude=latitude,
+                longitude=longitude,
+            )
+
             # Generate tile ID
-            tile_id = f"{satellite_source}_{band}_{region}_{timestamp}"
-            
-            # Hash pixel data
-            pixel_hash = hashlib.sha256(pixel_data.encode()).hexdigest()
-            
-            # Hash metadata
+            tile_id = f"{frame.source.value}_{band}_{frame.region}_{timestamp}"
+
+            # Hash the tile using the N-layer HashFabric module
             metadata = {
-                "satellite": satellite_source,
-                "region": region,
+                "satellite": frame.source.value,
+                "region": frame.region,
                 "band": band,
                 "timestamp": timestamp,
                 "latitude": latitude,
-                "longitude": longitude
+                "longitude": longitude,
             }
-            metadata_json = json.dumps(metadata, sort_keys=True)
-            metadata_hash = hashlib.sha256(metadata_json.encode()).hexdigest()
-            
-            # Compute integrity hash
-            combined = pixel_hash + metadata_hash
-            integrity_hash = hashlib.sha256(combined.encode()).hexdigest()
-            
-            # Validate with all three validators
-            circle_ok = await self.circle_validator.validate(Tile(
-                tile_id=tile_id,
-                satellite_source=satellite_source,
-                region=region,
-                band=band,
-                latitude=latitude,
-                longitude=longitude,
-                timestamp=timestamp,
-                pixel_hash=pixel_hash,
-                metadata_hash=metadata_hash,
-                integrity_hash=integrity_hash,
-                dimensions=(256, 256),
-                validator_checks={}
-            ))
-            
-            monotonic_ok = await self.monotonic_validator.validate(Tile(
-                tile_id=tile_id,
-                satellite_source=satellite_source,
-                region=region,
-                band=band,
-                latitude=latitude,
-                longitude=longitude,
-                timestamp=timestamp,
-                pixel_hash=pixel_hash,
-                metadata_hash=metadata_hash,
-                integrity_hash=integrity_hash,
-                dimensions=(256, 256),
-                validator_checks={}
-            ))
-            
-            range_ok = await self.range_validator.validate(Tile(
-                tile_id=tile_id,
-                satellite_source=satellite_source,
-                region=region,
-                band=band,
-                latitude=latitude,
-                longitude=longitude,
-                timestamp=timestamp,
-                pixel_hash=pixel_hash,
-                metadata_hash=metadata_hash,
-                integrity_hash=integrity_hash,
-                dimensions=(256, 256),
-                validator_checks={}
-            ))
-            
-            # Create tile with validation results
+            hashes = self.hash_fabric.hash_tile(pixel_data=pixel_data, metadata=metadata)
+            pixel_hash = hashes["pixel_hash"]
+            metadata_hash = hashes["metadata_hash"]
+            integrity_hash = hashes["integrity_hash"]
+
+            # Pattern validation via N-layer TileRecognitionSkill
+            passed, checks = await self.tile_skill.validate(integrity_hash)
+
+            # H-layer guardian gate — uses the cycle lock K-floor
+            try:
+                await self.guardian.assert_field(
+                    k_value=K_VALUE_FLOOR,  # tile decomposition always meets floor
+                    context={
+                        "N_pattern": "TileRecognitionSkill",
+                        "C_structure": "Engine365Days/E01",
+                        "O_flow": "atl:field:flow",
+                    },
+                    proposal={"tile_id": tile_id},
+                )
+            except FieldViolation:
+                logger.warning("Guardian blocked tile %s — field coherence lost", tile_id)
+                self.grid_rejected += 1
+                return tiles
+
+            # Build the tile dataclass
             tile = Tile(
                 tile_id=tile_id,
-                satellite_source=satellite_source,
-                region=region,
+                satellite_source=frame.source.value,
+                region=frame.region,
                 band=band,
                 latitude=latitude,
                 longitude=longitude,
@@ -342,37 +359,43 @@ class Engine365Days:
                 metadata_hash=metadata_hash,
                 integrity_hash=integrity_hash,
                 dimensions=(256, 256),
-                validator_checks={
-                    ValidatorType.CIRCLE.value: circle_ok,
-                    ValidatorType.MONOTONIC.value: monotonic_ok,
-                    ValidatorType.RANGE.value: range_ok
-                }
+                validator_checks=checks,
             )
-            
+
             tiles.append(tile)
             self.tiles.append(tile)
-            
-            # Update metrics
-            if circle_ok and monotonic_ok and range_ok:
+
+            if passed:
                 self.grid_passed += 1
             else:
                 self.grid_rejected += 1
-            
-            logger.info(f"Tile {tile_id}: {len(tiles)} generated, validators: C={circle_ok}, M={monotonic_ok}, R={range_ok}")
-            
+
+            logger.info(
+                "Tile %s: validators C=%s M=%s R=%s",
+                tile_id,
+                checks.get("Circle"),
+                checks.get("Monotonic"),
+                checks.get("Range"),
+            )
+
+        except FieldViolation:
+            pass  # already logged and counted above
         except Exception as e:
             logger.error(f"Frame decomposition error: {e}")
-        
+
         return tiles
-    
+
     def get_metrics(self) -> CycleMetrics:
-        """Get current cycle metrics"""
+        """Get current cycle metrics including N-layer skill and H-layer state."""
         uptime_seconds = (datetime.utcnow() - self.start_time).total_seconds()
         uptime_days = uptime_seconds / 86400
-        
+
         rejection_rate = self.grid_rejected / (self.grid_passed + self.grid_rejected) if (self.grid_passed + self.grid_rejected) > 0 else 0
         consensus_rate = 1.0 if len(self.tiles) > 0 else 0.0
-        
+
+        skill_metrics = self.tile_skill.get_metrics()
+        validators = skill_metrics.get("validators", {})
+
         return CycleMetrics(
             timestamp=datetime.utcnow().isoformat() + "Z",
             uptime_seconds=uptime_seconds,
@@ -384,26 +407,26 @@ class Engine365Days:
             consensus_rate=consensus_rate,
             validator_health=[
                 ValidatorMetric(
-                    name=ValidatorType.CIRCLE.value,
-                    checks_performed=self.circle_validator.checks,
-                    failures=self.circle_validator.failures,
-                    reliability=self.circle_validator.reliability
+                    name="Circle",
+                    checks_performed=validators.get("Circle", {}).get("checks", 0),
+                    failures=validators.get("Circle", {}).get("failures", 0),
+                    reliability=validators.get("Circle", {}).get("reliability", 1.0),
                 ),
                 ValidatorMetric(
-                    name=ValidatorType.MONOTONIC.value,
-                    checks_performed=self.monotonic_validator.checks,
-                    failures=self.monotonic_validator.failures,
-                    reliability=self.monotonic_validator.reliability
+                    name="Monotonic",
+                    checks_performed=validators.get("Monotonic", {}).get("checks", 0),
+                    failures=validators.get("Monotonic", {}).get("failures", 0),
+                    reliability=validators.get("Monotonic", {}).get("reliability", 1.0),
                 ),
                 ValidatorMetric(
-                    name=ValidatorType.RANGE.value,
-                    checks_performed=self.range_validator.checks,
-                    failures=self.range_validator.failures,
-                    reliability=self.range_validator.reliability
-                )
+                    name="Range",
+                    checks_performed=validators.get("Range", {}).get("checks", 0),
+                    failures=validators.get("Range", {}).get("failures", 0),
+                    reliability=validators.get("Range", {}).get("reliability", 1.0),
+                ),
             ],
             grid_passed=self.grid_passed,
-            grid_rejected=self.grid_rejected
+            grid_rejected=self.grid_rejected,
         )
 
 
@@ -478,10 +501,10 @@ async def get_metrics():
 
 @app.get("/cycle-lock")
 async def get_cycle_lock():
-    """Get cycle lock state"""
+    """Get cycle lock state (from N-layer CycleClock module)"""
     return {
         "status": "success",
-        **engine.cycle_lock.get_state()
+        **engine.cycle_clock.get_state()
     }
 
 

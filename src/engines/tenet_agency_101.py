@@ -2,6 +2,15 @@
 Tenet Agency 101: Firewall & Validation (E03 in E14 Oracle)
 Architect: AiAgency101
 
+Layer C — Tinana (Body / Structure)
+====================================
+Grounded in H (Invariant Root) and expresses N-layer
+FirewallPattern skill for decision evaluation.
+
+H dependency:  src.invariant.field_state.H_INVARIANT, K_VALUE_FLOOR
+H dependency:  src.invariant.guardian.FieldGuardian
+N dependency:  src.skills.firewall_pattern.FirewallPattern
+
 Rejects decisions not meeting consensus threshold.
 Enforces policy: 71% rejection rate (intentional firewall doctrine).
 Drift detection prevents engine desynchronization.
@@ -15,6 +24,13 @@ from typing import Dict
 from dataclasses import dataclass, asdict
 import uvicorn
 from fastapi import FastAPI, HTTPException
+
+# Layer H — invariant root (must be imported first)
+from src.invariant.field_state import H_INVARIANT, K_VALUE_FLOOR
+from src.invariant.guardian import FieldGuardian, FieldViolation
+
+# Layer N — firewall pattern skill
+from src.skills.firewall_pattern import FirewallPattern
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,8 +47,13 @@ class FirewallPolicy:
 
 
 class TenetAgency101:
-    """Firewall & Validation Engine (E03)"""
-    
+    """
+    Firewall & Validation Engine (E03) — C-layer.
+
+    Grounded in H (FieldGuardian + H_INVARIANT) and uses the
+    FirewallPattern N-skill for all decision evaluation.
+    """
+
     def __init__(self):
         self.engine_id = 3  # E03 in 14-engine ring
         self.ticks = 641642364
@@ -43,8 +64,18 @@ class TenetAgency101:
         self.horizon_entries = 320821187
         self.audit_log_length = 0
         self.start_time = datetime.utcnow()
-        
-        # Firewall policy
+
+        # H-layer guardian
+        self.guardian = FieldGuardian()
+
+        # N-layer firewall skill
+        self.firewall_skill = FirewallPattern(
+            k_floor=K_VALUE_FLOOR,
+            rejection_threshold=0.71,
+            firewall_mode="strict",
+        )
+
+        # Firewall policy (kept for API compatibility)
         self.policy = FirewallPolicy(
             rejection_threshold=0.71,
             firewall_mode="strict",
@@ -52,59 +83,76 @@ class TenetAgency101:
             decisions_executed=0,
             decisions_rejected=641642364
         )
-        
-        logger.info("Tenet Agency 101 initialized (E03 - Firewall Validation)")
-    
+
+        logger.info(
+            "Tenet Agency 101 initialised (E03 - Firewall Validation) — "
+            "H_coherence=%s",
+            H_INVARIANT.get("coherence_hash", "")[:16],
+        )
+
     async def evaluate_decision(self, proposal: Dict, k_value: float) -> Dict:
         """
-        Evaluate decision against firewall policy
-        Only allow if K ≥ 0.99 (consensus threshold met)
+        Evaluate decision against firewall policy.
+
+        Uses the N-layer FirewallPattern skill for the core evaluation,
+        and gates the entire call through the H-layer FieldGuardian.
         """
-        self.ticks += 1
-        
+        # H-layer assertion (guardian also checks anchor integrity)
         try:
-            # Check if consensus threshold met
-            consensus_met = k_value >= 0.99
-            
-            if consensus_met:
-                # Decision passes firewall
-                self.decisions_executed += 1
-                decision = "ALLOW"
-                approved = True
-            else:
-                # Decision rejected by firewall
-                self.decisions_rejected += 1
-                decision = "REJECT"
-                approved = False
-            
-            # Update metrics
-            self.rejection_rate = self.decisions_rejected / self.ticks if self.ticks > 0 else 0
-            
-            # Drift detection
-            if approved:
-                self.drift_ratio = self.horizon_entries / self.ticks if self.ticks > 0 else 0
-            
-            logger.info(f"Firewall decision: {decision} (K={k_value:.4f}, consensus={'MET' if consensus_met else 'NOT MET'})")
-            
+            await self.guardian.assert_field(
+                k_value=k_value,
+                context={
+                    "N_pattern": "FirewallPattern",
+                    "C_structure": "TenetAgency101/E03",
+                    "O_flow": "atl:field:flow",
+                },
+                proposal=proposal,
+            )
+        except FieldViolation as fv:
+            # Guardian logged this; propagate the rejection as a valid firewall outcome
+            logger.info("Guardian-level FieldViolation translated to firewall REJECT")
+            self.ticks += 1
+            self.decisions_rejected += 1
+            self.rejection_rate = self.decisions_rejected / self.ticks if self.ticks > 0 else 1.0
             return {
                 "status": "success",
                 "ticks": self.ticks,
                 "proposal": proposal,
                 "k_value": k_value,
-                "firewall_decision": decision,
-                "approved": approved,
+                "firewall_decision": "REJECT",
+                "approved": False,
                 "rejection_rate": self.rejection_rate,
-                "policy": asdict(self.policy)
+                "reason": str(fv),
+                "policy": asdict(self.policy),
             }
-        
-        except Exception as e:
-            logger.error(f"Firewall evaluation error: {e}")
-            raise
+
+        # N-layer skill evaluation
+        result = self.firewall_skill.evaluate(proposal=proposal, k_value=k_value)
+
+        # Sync counters with skill state
+        self.ticks = self.firewall_skill._ticks + 641642364
+        self.decisions_executed = self.firewall_skill._executed
+        self.decisions_rejected = self.firewall_skill._rejected + 641642364
+        self.rejection_rate = result["rejection_rate"]
+        self.drift_ratio = result["drift_ratio"]
+        if result["approved"]:
+            self.horizon_entries += 1
+
+        return {
+            "status": "success",
+            "ticks": self.ticks,
+            "proposal": proposal,
+            "k_value": k_value,
+            "firewall_decision": result["firewall_decision"],
+            "approved": result["approved"],
+            "rejection_rate": self.rejection_rate,
+            "policy": asdict(self.policy),
+        }
     
     def get_metrics(self) -> Dict:
-        """Get engine metrics"""
+        """Get engine metrics including H/N/C layer state."""
         uptime_seconds = (datetime.utcnow() - self.start_time).total_seconds()
-        
+
         return {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "uptime_seconds": uptime_seconds,
@@ -115,7 +163,16 @@ class TenetAgency101:
             "rejection_rate": self.rejection_rate,
             "drift_ratio": self.drift_ratio,
             "horizon_entries": self.horizon_entries,
-            "audit_log_length": self.audit_log_length
+            "audit_log_length": self.audit_log_length,
+            # Unified field layer context
+            "H_state": {
+                "coherence_hash": H_INVARIANT.get("coherence_hash", "")[:16],
+                "k_value_floor": K_VALUE_FLOOR,
+                "lattice_root": "H",
+            },
+            "N_pattern": self.firewall_skill.get_metrics(),
+            "C_structure": "TenetAgency101/E03",
+            "guardian": self.guardian.get_metrics(),
         }
 
 

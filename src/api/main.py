@@ -7,6 +7,12 @@ Routes between:
 - Ultimate Engine (E02): Byzantine consensus
 - Tenet Agency 101 (E03): Firewall validation
 - XYO Witness: Immutable ledger + SymPy invariants
+
+Layer O — Mauri (Life Force / Flow)
+=====================================
+The API gateway is the primary O-layer endpoint.
+  GET /api/field  — returns the live unified field state
+                    { H, N, C, O }
 """
 
 import asyncio
@@ -20,6 +26,17 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
 import uvicorn
 
+# Layer H — invariant root
+from src.invariant.field_state import H_INVARIANT, K_VALUE_FLOOR
+from src.invariant.guardian import FieldGuardian
+
+# Layer O — field sync and propagator
+from src.witness.field_sync import FieldSync
+from src.witness.propagator import Propagator
+
+# Layer C — engine ring registry
+from src.engines import ring_summary, active_engines
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -28,17 +45,27 @@ logger = logging.getLogger(__name__)
 # ============================================================================
 
 class APIGateway:
-    """Coordinator for all engines and witness layer"""
-    
+    """Coordinator for all engines and witness layer (O-layer surface)."""
+
     def __init__(self):
         self.engine_365_url = "http://engine-365-days:8000"
         self.ultimate_engine_url = "http://ultimate-engine:8000"
         self.tenet_url = "http://tenetaiagency-101:8000"
         self.witness_url = "http://xyo-witness:8000"
-        
+
         self.start_time = datetime.utcnow()
-        
-        logger.info("API Gateway initialized (AiAgency101)")
+
+        # O-layer components (no Redis by default; can be injected)
+        self.field_sync = FieldSync()
+        self.propagator = Propagator()
+
+        # H-layer guardian for the gateway itself
+        self.guardian = FieldGuardian()
+
+        logger.info(
+            "API Gateway initialised (AiAgency101) — H_coherence=%s",
+            H_INVARIANT.get("coherence_hash", "")[:16],
+        )
     
     async def health_check(self) -> Dict[str, Any]:
         """Health check all services"""
@@ -220,12 +247,12 @@ class APIGateway:
     
     async def get_system_metrics(self) -> Dict[str, Any]:
         """Get metrics from all services"""
-        
+
         metrics = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "services": {}
         }
-        
+
         async with httpx.AsyncClient(timeout=5.0) as client:
             # Engine 365 metrics
             try:
@@ -233,22 +260,74 @@ class APIGateway:
                 metrics["services"]["engine-365-days"] = resp.json()
             except:
                 metrics["services"]["engine-365-days"] = {"error": "unavailable"}
-            
+
             # Ultimate Engine metrics
             try:
                 resp = await client.get(f"{self.ultimate_engine_url}/metrics")
                 metrics["services"]["ultimate-engine"] = resp.json()
             except:
                 metrics["services"]["ultimate-engine"] = {"error": "unavailable"}
-            
+
             # Tenet Agency metrics
             try:
                 resp = await client.get(f"{self.tenet_url}/metrics")
                 metrics["services"]["tenet-agency-101"] = resp.json()
             except:
                 metrics["services"]["tenet-agency-101"] = {"error": "unavailable"}
-        
+
         return metrics
+
+    async def get_field_state(self) -> Dict[str, Any]:
+        """
+        Return the live unified field state — H → N → C → O.
+
+        Collects the current K-value from the Ultimate Engine (C-layer)
+        and assembles the full field state dict.
+        """
+        # Fetch current K-value from ENGINE2 (best-effort)
+        k_value = K_VALUE_FLOOR  # default floor
+        engine_ring_status: Dict[str, Any] = ring_summary()
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                resp = await client.get(f"{self.ultimate_engine_url}/metrics")
+                if resp.status_code == 200:
+                    k_value = resp.json().get("k_value", K_VALUE_FLOOR)
+        except Exception:
+            pass
+
+        # Active N skills (from engine ring registry)
+        active = active_engines()
+        active_skills = []
+        for e in active.values():
+            active_skills.extend(e.get("N_skills", []))
+
+        return {
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "H": {
+                "anchor_hash": H_INVARIANT.get("coherence_hash", ""),
+                "origin": H_INVARIANT.get("origin", ""),
+                "k_value_floor": K_VALUE_FLOOR,
+                "lattice_root": "H",
+                "guardian": self.guardian.get_metrics(),
+            },
+            "N": {
+                "active_skills": list(set(active_skills)),
+                "lattice_layer": "N",
+            },
+            "C": {
+                "engine_ring": engine_ring_status,
+                "k_value": k_value,
+                "lattice_layer": "C",
+            },
+            "O": {
+                "sync_propagation_log": self.field_sync.get_log(20),
+                "ledger_size": self.field_sync.ledger_size(),
+                "propagator": self.propagator.get_status(),
+                "channel": "atl:field:flow",
+                "lattice_layer": "O",
+            },
+            "invariant": "H → N → C → O",
+        }
 
 
 # ============================================================================
@@ -301,6 +380,23 @@ async def process_satellite_frame(
 async def get_metrics():
     """Get all system metrics"""
     return await gateway.get_system_metrics()
+
+
+@app.get("/api/field")
+async def get_field():
+    """
+    Live unified field state — H → N → C → O.
+
+    Returns the complete field state dict::
+
+        {
+            "H": { anchor_hash, origin, k_value_floor, guardian },
+            "N": { active_skills },
+            "C": { engine_ring, k_value },
+            "O": { sync_propagation_log, ledger_size, propagator },
+        }
+    """
+    return await gateway.get_field_state()
 
 
 @app.get("/info")

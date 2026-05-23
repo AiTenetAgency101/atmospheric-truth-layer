@@ -1,6 +1,17 @@
 """
-Ultimate Engine: Byzantine Consensus Coordinator (E02 in E14 Oracle)
+Ultimate Engine — ENGINE2: Byzantine Consensus Coordinator (E02 in E14 Oracle)
 Architect: AiAgency101
+
+Layer C — Tinana (Body / Structure) — Trunk of the Lattice Tree
+=========================================================
+ENGINE2 is the structural trunk of the unified field.
+It is grounded in H (Invariant Root via src.invariant) and expresses
+pattern logic from N (ConsensusPattern skill via src.skills).
+
+Lattice position: C (trunk)
+H dependency:     src.invariant.field_state.H_INVARIANT, K_VALUE_FLOOR
+H dependency:     src.invariant.guardian.FieldGuardian
+N dependency:     src.skills.consensus_pattern.ConsensusPattern
 
 Manages 14-engine Byzantine consensus with K-value coherence metric.
 Coordinates decision execution based on consensus threshold (K ≥ 0.99).
@@ -15,6 +26,13 @@ from dataclasses import dataclass, asdict
 import uvicorn
 from fastapi import FastAPI, HTTPException
 import random
+
+# Layer H — invariant root (must be imported first)
+from src.invariant.field_state import H_INVARIANT, K_VALUE_FLOOR
+from src.invariant.guardian import FieldGuardian, FieldViolation
+
+# Layer N — cognitive pattern (consensus skill)
+from src.skills.consensus_pattern import ConsensusPattern
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,8 +49,13 @@ class ConsensusState:
 
 
 class UltimateEngine:
-    """Byzantine Consensus Engine (E02)"""
-    
+    """
+    Byzantine Consensus Engine (E02) — ENGINE2 — C-layer trunk.
+
+    Grounded in H (FieldGuardian + H_INVARIANT) and uses the
+    ConsensusPattern N-skill for K-value computation and engine evolution.
+    """
+
     def __init__(self):
         self.engine_id = 2  # E02 in 14-engine ring
         self.cycles = 2548079
@@ -42,7 +65,13 @@ class UltimateEngine:
         self.sovereignty_orders = 10
         self.byzantine_layers = 12
         self.start_time = datetime.utcnow()
-        
+
+        # H-layer guardian — all decisions gate through this
+        self.guardian = FieldGuardian()
+
+        # N-layer skill — consensus pattern computation
+        self.consensus_skill = ConsensusPattern(k_floor=K_VALUE_FLOOR)
+
         # 14 engine states (E01-E14)
         self.engine_states: Dict[int, ConsensusState] = {}
         for i in range(1, 15):
@@ -53,56 +82,70 @@ class UltimateEngine:
                 coherence=random.uniform(-1, 1),
                 timestamp=datetime.utcnow().isoformat() + "Z"
             )
-        
-        logger.info("Ultimate Engine initialized (E02 - Byzantine Consensus)")
-    
+
+        logger.info(
+            "Ultimate Engine (ENGINE2) initialized — E02 — C-layer trunk — "
+            "H_coherence=%s",
+            H_INVARIANT.get("coherence_hash", "")[:16],
+        )
+
     async def compute_consensus(self, proposal: Dict) -> Dict:
         """
-        Compute Byzantine consensus across 14 engines
-        Uses K-value (coherence metric) to determine if threshold met
+        Compute Byzantine consensus across 14 engines.
+
+        Flow:
+        1. PROPOSE  — log the proposal
+        2. PREPARE  — evolve engine states toward equilibrium (N-skill)
+        3. COMMIT   — compute K-value (N-skill)
+        4. GATE     — assert field via H-layer guardian
+        5. EXECUTE  — increment counters if gate opens
         """
         try:
-            # Phase 1: PROPOSE - broadcast to all engines
+            # Phase 1: PROPOSE
             logger.info(f"Proposing decision: {proposal}")
-            
-            # Phase 2: PREPARE - each engine evolves toward equilibrium
-            # dX/dt = -λ(X - X_ref)
-            lambda_convergence = 0.1
-            x_ref_phase = 0.0
-            x_ref_power = 0.0
-            x_ref_coherence = 0.0
-            
-            for i, state in self.engine_states.items():
-                # Euler integration
-                new_phase = state.phase - lambda_convergence * (state.phase - x_ref_phase)
-                new_power = state.power - lambda_convergence * (state.power - x_ref_power)
-                new_coherence = state.coherence - lambda_convergence * (state.coherence - x_ref_coherence)
-                
+
+            # Phase 2: PREPARE — evolve states using N-skill
+            raw_states = {
+                i: {
+                    "phase": s.phase,
+                    "power": s.power,
+                    "coherence": s.coherence,
+                }
+                for i, s in self.engine_states.items()
+            }
+            evolved = self.consensus_skill.evolve_all(raw_states)
+            for i, ev in evolved.items():
                 self.engine_states[i] = ConsensusState(
                     engine_id=i,
-                    phase=new_phase % 6.28,
-                    power=max(-1, min(1, new_power)),
-                    coherence=max(-1, min(1, new_coherence)),
-                    timestamp=datetime.utcnow().isoformat() + "Z"
+                    phase=ev["phase"],
+                    power=ev["power"],
+                    coherence=ev["coherence"],
+                    timestamp=datetime.utcnow().isoformat() + "Z",
                 )
-            
-            # Phase 3: COMMIT - compute K-value
-            distances = []
-            for state in self.engine_states.values():
-                distance_sq = (
-                    (state.phase - x_ref_phase)**2 +
-                    (state.power - x_ref_power)**2 +
-                    (state.coherence - x_ref_coherence)**2
-                )
-                distances.append(distance_sq**0.5)
-            
-            avg_distance = sum(distances) / len(distances) if distances else 0
-            k_value = 1.0 / (1.0 + avg_distance)
+
+            # Phase 3: COMMIT — compute K-value via N-skill
+            k_value = self.consensus_skill.compute_k(
+                {i: {"phase": s.phase, "power": s.power, "coherence": s.coherence}
+                 for i, s in self.engine_states.items()}
+            )
             self.k_value = k_value
-            
-            # Phase 4: EXECUTE - check if K ≥ 0.99
-            execution_gate_open = k_value >= 0.99
-            
+
+            # Phase 4: GATE — H-layer invariant assertion
+            try:
+                await self.guardian.assert_field(
+                    k_value=k_value,
+                    context={
+                        "N_pattern": "ConsensusPattern",
+                        "C_structure": "UltimateEngine/ENGINE2",
+                        "O_flow": "atl:field:flow",
+                    },
+                    proposal=proposal,
+                )
+                execution_gate_open = True
+            except FieldViolation:
+                execution_gate_open = False
+
+            # Phase 5: EXECUTE
             if execution_gate_open:
                 self.decisions_executed += 1
                 self.cycles += 1
@@ -110,9 +153,11 @@ class UltimateEngine:
             else:
                 self.decisions_rejected += 1
                 result = "REJECTED"
-            
-            logger.info(f"Consensus: K={k_value:.4f}, gate={'OPEN' if execution_gate_open else 'CLOSED'}, result={result}")
-            
+
+            logger.info(
+                f"Consensus: K={k_value:.4f}, gate={'OPEN' if execution_gate_open else 'CLOSED'}, result={result}"
+            )
+
             return {
                 "status": "success",
                 "proposal": proposal,
@@ -122,17 +167,20 @@ class UltimateEngine:
                 "engine_states": {str(i): asdict(s) for i, s in self.engine_states.items()},
                 "cycles": self.cycles,
                 "decisions_executed": self.decisions_executed,
-                "decisions_rejected": self.decisions_rejected
+                "decisions_rejected": self.decisions_rejected,
             }
-        
+
+        except FieldViolation:
+            # Already logged by guardian; re-raise as HTTP 503
+            raise
         except Exception as e:
             logger.error(f"Consensus error: {e}")
             raise
     
     def get_metrics(self) -> Dict:
-        """Get engine metrics"""
+        """Get engine metrics including H/N/C layer state."""
         uptime_seconds = (datetime.utcnow() - self.start_time).total_seconds()
-        
+
         return {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "uptime_seconds": uptime_seconds,
@@ -145,7 +193,16 @@ class UltimateEngine:
             "k_value": self.k_value,
             "byzantine_layers": self.byzantine_layers,
             "sovereignty_orders": self.sovereignty_orders,
-            "architecture": "AIAGENCY101_ULTIMATE_SOVEREIGN™"
+            "architecture": "AIAGENCY101_ULTIMATE_SOVEREIGN™",
+            # Unified field layer context
+            "H_state": {
+                "coherence_hash": H_INVARIANT.get("coherence_hash", "")[:16],
+                "k_value_floor": K_VALUE_FLOOR,
+                "lattice_root": "H",
+            },
+            "N_pattern": self.consensus_skill.get_metrics(),
+            "C_structure": "UltimateEngine/ENGINE2",
+            "guardian": self.guardian.get_metrics(),
         }
 
 
