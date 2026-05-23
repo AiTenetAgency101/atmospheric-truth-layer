@@ -10,6 +10,9 @@ on:
   pull_request:
     branches: ["**"]
 
+permissions:
+  contents: read
+
 jobs:
   anchor-integrity:
     name: Verify Genesis Anchor (H-Layer)

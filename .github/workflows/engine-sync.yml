@@ -13,6 +13,9 @@ on:
     # Daily at 00:00 UTC — cycle-lock alignment check
     - cron: "0 0 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   engine-structure:
     name: Verify Engine Ring Structure (C-Layer)

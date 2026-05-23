@@ -153,7 +153,7 @@ class CircleValidator:
             cycle_point = hash_int % 360  # Map to 360° circle
             
             # Should be evenly distributed
-            if 0 <= cycle_point <= 360:
+            if 0 <= cycle_point < 360:
                 return True
             else:
                 self.failures += 1
@@ -330,10 +330,17 @@ class Engine365Days:
             # Pattern validation via N-layer TileRecognitionSkill
             passed, checks = await self.tile_skill.validate(integrity_hash)
 
-            # H-layer guardian gate — uses the cycle lock K-floor
+            # Derive a tile-level K-value from validator reliability scores
+            tile_k_value = (
+                self.tile_skill.circle.reliability
+                + self.tile_skill.monotonic.reliability
+                + self.tile_skill.range.reliability
+            ) / 3.0
+
+            # H-layer guardian gate — uses computed tile validator K-value
             try:
                 await self.guardian.assert_field(
-                    k_value=K_VALUE_FLOOR,  # tile decomposition always meets floor
+                    k_value=tile_k_value,
                     context={
                         "N_pattern": "TileRecognitionSkill",
                         "C_structure": "Engine365Days/E01",

@@ -122,17 +122,17 @@ class TenetAgency101:
                 "firewall_decision": "REJECT",
                 "approved": False,
                 "rejection_rate": self.rejection_rate,
-                "reason": str(fv),
+                "reason": "Field coherence below threshold",
                 "policy": asdict(self.policy),
             }
 
         # N-layer skill evaluation
         result = self.firewall_skill.evaluate(proposal=proposal, k_value=k_value)
 
-        # Sync counters with skill state
-        self.ticks = self.firewall_skill._ticks + 641642364
-        self.decisions_executed = self.firewall_skill._executed
-        self.decisions_rejected = self.firewall_skill._rejected + 641642364
+        # Sync counters with skill state via public properties
+        self.ticks = self.firewall_skill.ticks + 641642364
+        self.decisions_executed = self.firewall_skill.executed
+        self.decisions_rejected = self.firewall_skill.rejected + 641642364
         self.rejection_rate = result["rejection_rate"]
         self.drift_ratio = result["drift_ratio"]
         if result["approved"]:

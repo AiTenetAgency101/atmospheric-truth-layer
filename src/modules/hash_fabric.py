@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 import os
 
 _DEFAULT_HMAC_KEY = b"atl-default-hmac-key-change-in-production"
-_HMAC_KEY = os.environb.get(b"HMAC_SECRET", _DEFAULT_HMAC_KEY)
+_hmac_secret = os.environ.get("HMAC_SECRET", "")
+_HMAC_KEY = _hmac_secret.encode("utf-8") if _hmac_secret else _DEFAULT_HMAC_KEY
 
 
 class HashFabric:

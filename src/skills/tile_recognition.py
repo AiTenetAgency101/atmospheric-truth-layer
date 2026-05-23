@@ -35,7 +35,8 @@ class CircleSkill:
         try:
             hash_int = int(integrity_hash, 16)
             cycle_point = hash_int % 360
-            if 0 <= cycle_point <= 360:
+            # cycle_point is always in [0, 359] — well-formedness check
+            if 0 <= cycle_point < 360:
                 return True
             self.failures += 1
             return False

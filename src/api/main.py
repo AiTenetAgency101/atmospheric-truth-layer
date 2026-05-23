@@ -292,8 +292,8 @@ class APIGateway:
                 resp = await client.get(f"{self.ultimate_engine_url}/metrics")
                 if resp.status_code == 200:
                     k_value = resp.json().get("k_value", K_VALUE_FLOOR)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Could not fetch K-value from ultimate-engine: %s", exc)
 
         # Active N skills (from engine ring registry)
         active = active_engines()

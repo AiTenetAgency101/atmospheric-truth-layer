@@ -109,6 +109,26 @@ class FirewallPattern:
         }
 
     # ------------------------------------------------------------------
+    # Public counters (for engines that sync state from the skill)
+    # ------------------------------------------------------------------
+
+    @property
+    def ticks(self) -> int:
+        return self._ticks
+
+    @property
+    def executed(self) -> int:
+        return self._executed
+
+    @property
+    def rejected(self) -> int:
+        return self._rejected
+
+    @property
+    def horizon_entries(self) -> int:
+        return self._horizon_entries
+
+    # ------------------------------------------------------------------
     # Drift detection
     # ------------------------------------------------------------------
 

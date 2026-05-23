@@ -140,11 +140,9 @@ class SatelliteDecoder:
             raw_source=satellite_source,
         )
         logger.debug(
-            "Decoded frame: source=%s region=%s band=%s lat=%.4f lon=%.4f",
+            "Decoded frame: source=%s region=%s band=%s",
             source.value,
             resolved_region,
             band,
-            latitude,
-            longitude,
         )
         return frame
