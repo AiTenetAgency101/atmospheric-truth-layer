@@ -44,6 +44,12 @@ from src.modules.satellite_decoder import SatelliteDecoder, SatelliteSource
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Baseline metrics carried over from the pre-refactor running system
+# (37,445,846 cycles completed before the N-layer refactor)
+_LEGACY_CYCLES_BASELINE: int = 37_445_846
+_LEGACY_GRID_PASSED_BASELINE: int = 3_510_223
+_LEGACY_GRID_REJECTED_BASELINE: int = 8_593_985
+
 # ============================================================================
 # DATA MODELS
 # ============================================================================
@@ -264,11 +270,11 @@ class Engine365Days:
         self.start_time = datetime.utcnow()
 
         # Metrics
-        self.cycles_completed = 37445846  # From running system
+        self.cycles_completed = _LEGACY_CYCLES_BASELINE
         self.decisions_evaluated = 100000
         self.decisions_allowed = 29000
-        self.grid_passed = 3510223
-        self.grid_rejected = 8593985
+        self.grid_passed = _LEGACY_GRID_PASSED_BASELINE
+        self.grid_rejected = _LEGACY_GRID_REJECTED_BASELINE
         self.tiles: List[Tile] = []
 
         logger.info(

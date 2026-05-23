@@ -35,6 +35,12 @@ from src.skills.firewall_pattern import FirewallPattern
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Baseline metrics carried over from the pre-refactor running system
+# (641,642,364 ticks / rejections accumulated before the N-layer refactor)
+_LEGACY_TICK_OFFSET: int = 641_642_364
+_LEGACY_REJECTION_OFFSET: int = 641_642_364
+_LEGACY_HORIZON_OFFSET: int = 320_821_187
+
 
 @dataclass
 class FirewallPolicy:
@@ -56,12 +62,12 @@ class TenetAgency101:
 
     def __init__(self):
         self.engine_id = 3  # E03 in 14-engine ring
-        self.ticks = 641642364
+        self.ticks = _LEGACY_TICK_OFFSET
         self.decisions_executed = 0
-        self.decisions_rejected = 641642364
+        self.decisions_rejected = _LEGACY_REJECTION_OFFSET
         self.rejection_rate = 1.0
-        self.drift_ratio = 320821187.0
-        self.horizon_entries = 320821187
+        self.drift_ratio = _LEGACY_HORIZON_OFFSET / _LEGACY_TICK_OFFSET
+        self.horizon_entries = _LEGACY_HORIZON_OFFSET
         self.audit_log_length = 0
         self.start_time = datetime.utcnow()
 
@@ -130,9 +136,9 @@ class TenetAgency101:
         result = self.firewall_skill.evaluate(proposal=proposal, k_value=k_value)
 
         # Sync counters with skill state via public properties
-        self.ticks = self.firewall_skill.ticks + 641642364
+        self.ticks = self.firewall_skill.ticks + _LEGACY_TICK_OFFSET
         self.decisions_executed = self.firewall_skill.executed
-        self.decisions_rejected = self.firewall_skill.rejected + 641642364
+        self.decisions_rejected = self.firewall_skill.rejected + _LEGACY_REJECTION_OFFSET
         self.rejection_rate = result["rejection_rate"]
         self.drift_ratio = result["drift_ratio"]
         if result["approved"]:
