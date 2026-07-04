@@ -227,6 +227,28 @@ MINTING_CERTIFICATE: Dict[str, Any] = {
         ]},
     ],
     "tagline": "The sky doesn't lie. Satellites don't sleep. Math doesn't break.",
+    "hardware": {
+        "name": "espVmark",
+        "url": "https://espVmark.robdoe.software",
+        "board": "ESP32-C6",
+        "role": "Hardware-Integrated Build Engine",
+        "tagline": "Hardware layer that lets atmo-truth-v1 iterate faster than average contestants.",
+        "pipeline": [
+            {"stage": "FIRMWARE FLASH", "status": "OK", "detail": "Auto-flash on commit"},
+            {"stage": "STATE VERIFIED", "status": "OK", "detail": "Post-boot integrity check"},
+            {"stage": "RUNTIME STABILIZED", "status": "OK", "detail": "Warm-up + drift lock"},
+            {"stage": "MANIFEST CLEAN", "status": "OK", "detail": "Reproducible output hash"},
+        ],
+        "metrics": {
+            "builds_per_day": 47,
+            "avg_flash_ms": 3200,
+            "firmware_version": "v1.0.0-minted",
+            "manifest_hash": "a91f4c8b2e6f7a3d",
+            "board_revision": "ESP32-C6 rev 1.2",
+            "uptime": "CONTINUOUS",
+            "iteration_velocity_ratio": 4.2,
+        },
+    },
 }
 
 

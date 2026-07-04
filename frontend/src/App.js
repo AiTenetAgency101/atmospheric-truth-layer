@@ -786,6 +786,152 @@ function RepoBlock({ cert }) {
 }
 
 // ============================================================================
+// Hardware Build Engine — espVmark on ESP32-C6
+// ============================================================================
+function HardwareEngine({ cert }) {
+    if (!cert?.hardware) return null;
+    const h = cert.hardware;
+    const metrics = h.metrics || {};
+    const boardRev = metrics.board_revision || "ESP32-C6";
+    const fwVersion = metrics.firmware_version || "v1.0.0";
+    const manifestHash = metrics.manifest_hash || "0000000000000000";
+    const board = `      ┌─────────────────────────────────────────────┐
+   ●──┤  ESP32-C6  ·  ${boardRev.padEnd(20, " ")}  ├──●
+   ●──┤                                             ├──●
+   ●──┤   ╔═══════════════════════════════════╗     ├──●
+   ●──┤   ║  espVmark ⟨⟩ BUILD ENGINE         ║     ├──●
+   ●──┤   ║  ${fwVersion.padEnd(28, " ")}   ║     ├──●
+   ●──┤   ║  MANIFEST ${manifestHash}         ║     ├──●
+   ●──┤   ╚═══════════════════════════════════╝     ├──●
+   ●──┤     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓         ├──●
+   ●──┤     UART · USB-JTAG · WIFI-6 · BLE 5.3      ├──●
+      └───┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬───────┘
+          │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │`;
+    return (
+        <section
+            className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28"
+            data-testid="hardware-section"
+        >
+            <div className="atl-divider mb-8">
+                <span>[11] // Hardware Build Engine · espVmark on ESP32-C6</span>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+                {/* Left: board diagram */}
+                <div className="lg:col-span-3 atl-card atl-sweep">
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <div className="atl-label text-[color:var(--atl-secondary)]">
+                                {h.role}
+                            </div>
+                            <div className="mt-1 text-white text-xl uppercase tracking-wider font-bold">
+                                {h.name}
+                            </div>
+                        </div>
+                        <a
+                            href={h.url}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="atl-mono text-xs px-3 py-1.5 border border-[rgba(0,255,65,0.5)] text-[color:var(--atl-primary)] hover:bg-[color:var(--atl-primary)] hover:text-black transition-all"
+                            data-testid="hardware-link"
+                        >
+                            {h.url.replace("https://", "")} ↗
+                        </a>
+                    </div>
+                    <pre
+                        className="atl-mono text-[0.55rem] sm:text-[0.68rem] lg:text-[0.78rem] leading-tight text-[color:var(--atl-primary)] p-3 sm:p-4 overflow-x-auto"
+                        style={{
+                            background: "rgba(0,0,0,0.55)",
+                            border: "1px solid rgba(0,255,65,0.25)",
+                            textShadow: "0 0 8px rgba(0,255,65,0.35)",
+                        }}
+                        data-testid="hardware-board-ascii"
+                    >
+{board}
+                    </pre>
+                    <div className="mt-4 atl-mono text-xs text-white/70 italic border-l-2 border-[color:var(--atl-primary)] pl-3">
+                        &quot;{h.tagline}&quot;
+                    </div>
+                </div>
+
+                {/* Right: pipeline + metrics */}
+                <div className="lg:col-span-2 space-y-4">
+                    <div className="atl-card">
+                        <div className="atl-label mb-3">Build Pipeline · Live</div>
+                        <ul className="space-y-2.5">
+                            {h.pipeline.map((p, i) => (
+                                <li
+                                    key={p.stage}
+                                    className="flex items-center gap-3"
+                                    data-testid={`pipeline-${i}`}
+                                >
+                                    <span className="atl-dot" />
+                                    <span className="atl-mono text-xs sm:text-sm text-white/90 uppercase tracking-widest flex-1">
+                                        {p.stage}
+                                    </span>
+                                    <span className="atl-mono text-[0.6rem] text-[color:var(--atl-primary)]">
+                                        {p.status}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="atl-card" style={{ padding: "0.9rem" }}>
+                            <div className="atl-label" style={{ fontSize: "0.6rem" }}>Builds / Day</div>
+                            <div className="atl-value" style={{ fontSize: "1.6rem" }}>
+                                {metrics.builds_per_day}
+                            </div>
+                        </div>
+                        <div className="atl-card" style={{ padding: "0.9rem" }}>
+                            <div className="atl-label" style={{ fontSize: "0.6rem" }}>Avg Flash</div>
+                            <div className="atl-value" style={{ fontSize: "1.6rem" }}>
+                                {(metrics.avg_flash_ms / 1000).toFixed(1)}s
+                            </div>
+                        </div>
+                        <div className="atl-card col-span-2" style={{ padding: "0.9rem" }}>
+                            <div className="atl-label" style={{ fontSize: "0.6rem" }}>
+                                Iteration Velocity · atmo-truth-v1 vs. avg contestant
+                            </div>
+                            <div className="mt-3 space-y-2" data-testid="velocity-chart">
+                                <div>
+                                    <div className="flex justify-between atl-mono text-[0.65rem] text-white/80 mb-1">
+                                        <span>atmo-truth-v1</span>
+                                        <span className="text-[color:var(--atl-primary)]">
+                                            {metrics.iteration_velocity_ratio}×
+                                        </span>
+                                    </div>
+                                    <div className="atl-progress" style={{ height: "10px" }}>
+                                        <div className="atl-progress__fill" style={{ width: "100%" }} />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between atl-mono text-[0.65rem] text-white/60 mb-1">
+                                        <span>avg contestant</span>
+                                        <span className="text-white/50">1.0×</span>
+                                    </div>
+                                    <div className="atl-progress" style={{ height: "10px" }}>
+                                        <div
+                                            className="atl-progress__fill"
+                                            style={{
+                                                width: `${(1 / metrics.iteration_velocity_ratio) * 100}%`,
+                                                background: "rgba(255,255,255,0.35)",
+                                                boxShadow: "none",
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
 // Final ASCII Affirmation
 // ============================================================================
 function Affirmation() {
@@ -809,7 +955,7 @@ function Affirmation() {
             data-testid="affirmation-section"
         >
             <div className="atl-divider mb-8">
-                <span>[10] // Final Affirmation</span>
+                <span>[12] // Final Affirmation</span>
             </div>
             <pre
                 className="atl-mono text-[0.58rem] sm:text-[0.72rem] lg:text-[0.85rem] leading-tight text-[color:var(--atl-primary)] p-4 sm:p-6 overflow-x-auto"
@@ -908,6 +1054,7 @@ function App() {
                 <ReadinessChecklist cert={cert} />
                 <Roadmap cert={cert} />
                 <RepoBlock cert={cert} />
+                <HardwareEngine cert={cert} />
                 <Affirmation />
                 <Footer />
             </div>

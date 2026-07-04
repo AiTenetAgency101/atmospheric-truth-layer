@@ -54,3 +54,9 @@ Added the missing sections from the official minting document:
 
 Backend `/api/minting-certificate` payload extended with `rfc3161`, `readiness_checklist`, `roadmap`, `github` keys.
 Lint clean. Frontend confirmed via screenshot.
+
+## Iteration 3 (2026-07-04) — Hardware Build Engine section
+- Added new section `[11] // Hardware Build Engine · espVmark on ESP32-C6`
+- Backend: `/api/minting-certificate` now includes `hardware` object (url, board_revision, pipeline stages, metrics, tagline)
+- Frontend: ASCII ESP32-C6 board diagram with glowing pins, live 4-stage build pipeline (FIRMWARE FLASH / STATE VERIFIED / RUNTIME STABILIZED / MANIFEST CLEAN), Builds/Day + Avg Flash tiles, Iteration Velocity comparison chart (atmo-truth-v1 4.2× vs avg contestant 1.0×), CTA link to espVmark.robdoe.software
+- Final Affirmation renumbered to `[12]`
