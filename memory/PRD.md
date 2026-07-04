@@ -43,3 +43,14 @@ User shared a "MINTING CERTIFICATE" document for **Atmospheric Truth Layer v1.0.
 - **Investor** visiting during Series A roadshow → needs impressive, trust-building visual proof of production-readiness
 - **Technical reviewer / DD** → needs the raw hashes, timestamps, consensus metrics visible
 - **GitHub visitor** → needs a memorable landing that matches the MINTED.md vibe
+
+## Iteration 2 (2026-04-30) — Full MINTED.md integration
+Added the missing sections from the official minting document:
+- **RFC3161 Timestamp Authority block** inside the Genesis Certificate (Meinberg Time Services, TSA hash & signature)
+- **Series A Readiness Checklist** — 5 columns (Technical / Documentation / Business / Code / Security), 40 items total
+- **Roadmap / What's Next** — 4-phase execution timeline (Week 1 COMPLETE, Week 2 IN_PROGRESS, Week 3 UPCOMING, Month 1 TARGET)
+- **Official Repository block** — GitHub link, release tag, license, Clone/Re-verify Signatures CTAs
+- **Final ASCII Affirmation** — glowing terminal box with the full witnessed-truth declaration
+
+Backend `/api/minting-certificate` payload extended with `rfc3161`, `readiness_checklist`, `roadmap`, `github` keys.
+Lint clean. Frontend confirmed via screenshot.

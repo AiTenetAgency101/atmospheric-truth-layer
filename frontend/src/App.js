@@ -440,6 +440,42 @@ function Certificate({ cert }) {
                     <span className="text-[color:var(--atl-primary)]"> tamper-evident</span>, and
                     <span className="text-[color:var(--atl-primary)]"> verifiable</span>.
                 </div>
+
+                {cert.rfc3161 && (
+                    <div
+                        className="mt-6 p-4 sm:p-5 border border-[rgba(0,255,255,0.3)]"
+                        style={{ background: "rgba(0,255,255,0.04)" }}
+                        data-testid="rfc3161-block"
+                    >
+                        <div className="atl-label text-[color:var(--atl-secondary)] mb-3">
+                            RFC3161 Timestamp Authority Certification
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs atl-mono">
+                            <div>
+                                <div className="text-white/40 uppercase tracking-widest">Authority</div>
+                                <div className="text-white/90 mt-0.5">{cert.rfc3161.authority}</div>
+                            </div>
+                            <div>
+                                <div className="text-white/40 uppercase tracking-widest">Timestamp</div>
+                                <div className="text-white/90 mt-0.5 break-all">{cert.rfc3161.timestamp}</div>
+                            </div>
+                            <div>
+                                <div className="text-white/40 uppercase tracking-widest">TSA Hash</div>
+                                <div className="atl-hash mt-0.5">{cert.rfc3161.tsa_hash}</div>
+                            </div>
+                            <div>
+                                <div className="text-white/40 uppercase tracking-widest">TSA Signature</div>
+                                <div className="atl-hash mt-0.5">{cert.rfc3161.tsa_signature}</div>
+                            </div>
+                            <div className="sm:col-span-2">
+                                <div className="text-white/40 uppercase tracking-widest">Certification</div>
+                                <div className="text-[color:var(--atl-primary)] mt-0.5">
+                                    {cert.rfc3161.certification}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </section>
     );
@@ -587,6 +623,211 @@ function SeriesA({ cert }) {
 }
 
 // ============================================================================
+// Series A Readiness Checklist
+// ============================================================================
+function ReadinessChecklist({ cert }) {
+    if (!cert?.readiness_checklist) return null;
+    const groups = Object.entries(cert.readiness_checklist);
+    return (
+        <section
+            className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28"
+            data-testid="readiness-section"
+        >
+            <div className="atl-divider mb-8">
+                <span>[07] // Series A Readiness Checklist</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                {groups.map(([label, items]) => (
+                    <div
+                        key={label}
+                        className="atl-card"
+                        data-testid={`readiness-${label.toLowerCase()}`}
+                    >
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="text-white text-base uppercase tracking-wider font-bold">
+                                {label}
+                            </div>
+                            <span className="atl-dot" />
+                        </div>
+                        <ul className="space-y-2 atl-mono text-xs text-white/75 leading-relaxed">
+                            {items.map((it) => (
+                                <li key={it} className="flex gap-2">
+                                    <span className="text-[color:var(--atl-primary)] shrink-0">✓</span>
+                                    <span>{it}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
+// Roadmap / What's Next
+// ============================================================================
+function Roadmap({ cert }) {
+    if (!cert?.roadmap) return null;
+    const colorFor = (s) =>
+        s === "COMPLETE" ? "var(--atl-primary)"
+        : s === "IN_PROGRESS" ? "var(--atl-secondary)"
+        : s === "UPCOMING" ? "rgba(255,255,255,0.8)"
+        : "var(--atl-glitch)";
+
+    return (
+        <section
+            className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28"
+            data-testid="roadmap-section"
+        >
+            <div className="atl-divider mb-8">
+                <span>[08] // What&apos;s Next · Execution Timeline</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {cert.roadmap.map((r, i) => (
+                    <div
+                        key={r.phase}
+                        className="atl-card"
+                        data-testid={`roadmap-${i}`}
+                    >
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="atl-label">Phase · {String(i + 1).padStart(2, "0")}</div>
+                            <span
+                                className="text-[0.62rem] atl-mono px-2 py-0.5 border"
+                                style={{
+                                    color: colorFor(r.status),
+                                    borderColor: colorFor(r.status),
+                                }}
+                            >
+                                {r.status.replace("_", " ")}
+                            </span>
+                        </div>
+                        <div className="text-white text-lg uppercase tracking-wider font-bold mb-4">
+                            {r.phase}
+                        </div>
+                        <ul className="space-y-2 atl-mono text-xs text-white/75">
+                            {r.items.map((it) => (
+                                <li key={it} className="flex gap-2">
+                                    <span className="text-[color:var(--atl-primary)]">→</span>
+                                    <span>{it}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
+// GitHub / Repository block
+// ============================================================================
+function RepoBlock({ cert }) {
+    if (!cert?.github) return null;
+    const g = cert.github;
+    return (
+        <section
+            className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28"
+            data-testid="repo-section"
+        >
+            <div className="atl-divider mb-8">
+                <span>[09] // Official Repository</span>
+            </div>
+            <div className="atl-card">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
+                    <div className="md:col-span-3">
+                        <div className="atl-label">Repository</div>
+                        <a
+                            href={g.repository}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="block mt-2 text-[color:var(--atl-primary)] atl-mono text-base sm:text-lg break-all hover:underline"
+                            data-testid="repo-link"
+                        >
+                            {g.repository}
+                        </a>
+                        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs atl-mono">
+                            <div>
+                                <div className="text-white/40 uppercase tracking-widest">Release</div>
+                                <div className="text-[color:var(--atl-secondary)] mt-0.5">{g.release_tag}</div>
+                            </div>
+                            <div>
+                                <div className="text-white/40 uppercase tracking-widest">License</div>
+                                <div className="text-white/90 mt-0.5">{g.license}</div>
+                            </div>
+                            <div className="col-span-2">
+                                <div className="text-white/40 uppercase tracking-widest">Status</div>
+                                <div className="text-[color:var(--atl-primary)] mt-0.5">{g.status}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="md:col-span-2">
+                        <a
+                            href={g.repository}
+                            target="_blank"
+                            rel="noreferrer noopener"
+                            className="atl-btn w-full justify-center"
+                            data-testid="repo-cta"
+                        >
+                            ▶ Clone · git pull origin genesis
+                        </a>
+                        <a
+                            href="#certificate"
+                            className="atl-btn atl-btn--ghost w-full justify-center mt-3"
+                        >
+                            ◈ Re-verify Signatures
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
+// Final ASCII Affirmation
+// ============================================================================
+function Affirmation() {
+    const block = `╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║     The sky doesn't lie. Satellites don't sleep. Math doesn't break.    ║
+║                                                                         ║
+║              Minted: 2026-04-23T07:53:50.5144990+10:00                  ║
+║              Status: ● PRODUCTION READY                                 ║
+║              Series A: Ready to launch                                  ║
+║                                                                         ║
+║  Witnessed by 4 satellites + 14 Byzantine engines + XYO ledger.         ║
+║  Cryptographically verified. Tamper-proof. Immutable.                   ║
+║                                                                         ║
+║              This is the moment atmospheric truth began.                ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝`;
+    return (
+        <section
+            className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28"
+            data-testid="affirmation-section"
+        >
+            <div className="atl-divider mb-8">
+                <span>[10] // Final Affirmation</span>
+            </div>
+            <pre
+                className="atl-mono text-[0.58rem] sm:text-[0.72rem] lg:text-[0.85rem] leading-tight text-[color:var(--atl-primary)] p-4 sm:p-6 overflow-x-auto"
+                style={{
+                    background: "rgba(0,0,0,0.55)",
+                    border: "1px solid rgba(0,255,65,0.35)",
+                    boxShadow: "0 0 30px rgba(0,255,65,0.2), inset 0 0 30px rgba(0,255,65,0.05)",
+                    textShadow: "0 0 10px rgba(0,255,65,0.4)",
+                }}
+                data-testid="affirmation-ascii"
+            >
+{block}
+            </pre>
+        </section>
+    );
+}
+
+// ============================================================================
 // Footer
 // ============================================================================
 function Footer() {
@@ -607,7 +848,7 @@ function Footer() {
                         }}
                         data-testid="footer-tagline"
                     >
-                        The sky doesn't lie. Satellites don't sleep. Math doesn't break.
+                        The sky doesn&apos;t lie. Satellites don&apos;t sleep. Math doesn&apos;t break.
                     </p>
                     <div className="mt-6 atl-mono text-xs text-white/50 uppercase tracking-[0.3em]">
                         Minted 2026-04-23 · AEST · Witnessed by 14 Byzantine engines + XYO ledger
@@ -664,6 +905,10 @@ function App() {
                 <Certificate cert={cert} />
                 <ByzantineMatrix />
                 <SeriesA cert={cert} />
+                <ReadinessChecklist cert={cert} />
+                <Roadmap cert={cert} />
+                <RepoBlock cert={cert} />
+                <Affirmation />
                 <Footer />
             </div>
         </div>
