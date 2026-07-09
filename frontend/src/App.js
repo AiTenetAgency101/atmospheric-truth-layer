@@ -59,16 +59,16 @@ function Ticker({ cert }) {
         "XYO BOUND-WITNESS ACTIVE",
         "SERIES A :: $2.5M ASK // $12.5M POST-MONEY",
     ];
-    const row = items.map((t, i) => (
-        <span key={i} className="text-[0.72rem] atl-mono uppercase tracking-[0.28em]">
+    const buildRow = (prefix) => items.map((t) => (
+        <span key={`${prefix}-${t}`} className="text-[0.72rem] atl-mono uppercase tracking-[0.28em]">
             <span className="text-[color:var(--atl-primary)] mr-3">◆</span>
             <span className="text-white/80">{t}</span>
         </span>
     ));
     return (
         <div className="atl-ticker" data-testid="status-ticker">
-            <div className="atl-ticker__track">{row}</div>
-            <div className="atl-ticker__track" aria-hidden="true">{row}</div>
+            <div className="atl-ticker__track">{buildRow("a")}</div>
+            <div className="atl-ticker__track" aria-hidden="true">{buildRow("b")}</div>
         </div>
     );
 }
@@ -563,10 +563,11 @@ function ByzantineMatrix() {
 function SeriesA({ cert }) {
     if (!cert) return null;
     const s = cert.series_a;
-    const fmt = (n) =>
-        n >= 1_000_000_000 ? `$${(n / 1_000_000_000).toFixed(1)}B`
-        : n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(2)}M`
-        : `$${n.toLocaleString()}`;
+    const fmt = (n) => {
+        if (n >= 1_000_000_000) return `$${(n / 1_000_000_000).toFixed(1)}B`;
+        if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+        return `$${n.toLocaleString()}`;
+    };
 
     const rows = [
         { label: "Funding Ask", value: fmt(s.funding_ask_usd) },
@@ -688,11 +689,12 @@ function ReadinessChecklist({ cert }) {
 // ============================================================================
 function Roadmap({ cert }) {
     if (!cert?.roadmap) return null;
-    const colorFor = (s) =>
-        s === "COMPLETE" ? "var(--atl-primary)"
-        : s === "IN_PROGRESS" ? "var(--atl-secondary)"
-        : s === "UPCOMING" ? "rgba(255,255,255,0.8)"
-        : "var(--atl-glitch)";
+    const ROADMAP_STATUS_COLOR = {
+        COMPLETE: "var(--atl-primary)",
+        IN_PROGRESS: "var(--atl-secondary)",
+        UPCOMING: "rgba(255,255,255,0.8)",
+    };
+    const colorFor = (s) => ROADMAP_STATUS_COLOR[s] || "var(--atl-glitch)";
 
     return (
         <section
@@ -1045,7 +1047,9 @@ function App() {
             .get(`${API}/minting-certificate`)
             .then((r) => setCert(r.data))
             .catch((e) => {
-                console.error(e);
+                if (process.env.NODE_ENV !== "production") {
+                    console.error("[ATL] cert fetch failed:", e);
+                }
                 setError(e.message);
             });
     }, []);
