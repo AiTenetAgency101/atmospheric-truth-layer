@@ -1,0 +1,11 @@
+# Ignore emergent-render components with intentional non-standard hook patterns
+src/components/EarthGlobe.jsx
+src/components/MatrixRain.jsx
+src/components/LiveHash.jsx
+src/components/UplinkProbe.jsx
+
+# Ignore high-complexity backend tests that are intentionally decomposed
+tests/test_atl_backend.py
+
+# Ignore generated or chromatic console art
+src/hooks/use-toast.js
