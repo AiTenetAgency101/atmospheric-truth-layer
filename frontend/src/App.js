@@ -4,6 +4,7 @@ import "@/App.css";
 import MatrixRain from "@/components/MatrixRain";
 import CountUp from "@/components/CountUp";
 import LiveHash from "@/components/LiveHash";
+import UplinkProbe from "@/components/UplinkProbe";
 
 const EarthGlobe = lazy(() => import("@/components/EarthGlobe"));
 
@@ -105,12 +106,10 @@ function Hero({ cert }) {
                     </div>
 
                     <p className="mt-7 max-w-2xl text-white/70 leading-relaxed atl-mono text-sm sm:text-base">
-                        Cryptographically verified global atmospheric data integrity.
-                        Witnessed by <span className="text-[color:var(--atl-primary)]">BOM</span>,{" "}
-                        <span className="text-[color:var(--atl-primary)]">Himawari-8</span>,{" "}
-                        <span className="text-[color:var(--atl-primary)]">GOES-16</span>, and{" "}
-                        <span className="text-[color:var(--atl-primary)]">Meteosat</span>.
-                        14 Byzantine engines. 37M+ tiles. One immutable ledger.
+                        Weather data you can actually trust. Every reading is signed by
+                        <span className="text-[color:var(--atl-primary)]"> 4 satellites</span> across 4 continents and cross-checked by
+                        <span className="text-[color:var(--atl-primary)]"> 14 independent validators</span>.
+                        Impossible to fake. Impossible to edit. Impossible to backdate.
                     </p>
 
                     <div className="mt-8 flex flex-wrap gap-3">
@@ -219,9 +218,13 @@ function EngineGrid({ cert }) {
     ];
     return (
         <section className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-24" data-testid="engines-section">
-            <div className="atl-divider mb-8">
+            <div className="atl-divider mb-3">
                 <span>[02] // Live Engine Telemetry</span>
             </div>
+            <p className="atl-mono text-xs sm:text-sm text-white/60 mb-8 max-w-3xl">
+                <span className="text-[color:var(--atl-secondary)]">In plain English → </span>
+                Four independent systems constantly cross-check every piece of weather data. If any one of them disagrees, the data is rejected. These counters show how many checks they&apos;ve done.
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                 {engines.map((e) => (
                     <div key={e.key} className="atl-card atl-sweep" data-testid={`engine-card-${e.testId}`}>
@@ -261,9 +264,13 @@ function Witnesses({ cert }) {
     const colors = ["#00FF41", "#00FFFF", "#00FF41", "#00FFFF"];
     return (
         <section className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28" data-testid="witnesses-section">
-            <div className="atl-divider mb-8">
+            <div className="atl-divider mb-3">
                 <span>[03] // Multi-Satellite Witness Mesh</span>
             </div>
+            <p className="atl-mono text-xs sm:text-sm text-white/60 mb-8 max-w-3xl">
+                <span className="text-[color:var(--atl-secondary)]">In plain English → </span>
+                Four satellites from four continents independently sign every observation. All four must agree — no single agency can fake or edit the data.
+            </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
                 {cert.witnesses.map((w, i) => (
@@ -340,9 +347,13 @@ function Certificate({ cert }) {
             className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28 scroll-mt-24"
             data-testid="certificate-section"
         >
-            <div className="atl-divider mb-8">
+            <div className="atl-divider mb-3">
                 <span>[04] // Genesis Minting Certificate</span>
             </div>
+            <p className="atl-mono text-xs sm:text-sm text-white/60 mb-8 max-w-3xl">
+                <span className="text-[color:var(--atl-secondary)]">In plain English → </span>
+                This is the birth certificate of the system — a tamper-proof, timestamped, cryptographically signed record. It can&apos;t be changed, backdated, or forged.
+            </p>
 
             <div
                 className="relative p-6 sm:p-10"
@@ -489,9 +500,13 @@ function ByzantineMatrix() {
     const nodes = Array.from({ length: 14 }, (_, i) => i);
     return (
         <section className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28" data-testid="byzantine-section">
-            <div className="atl-divider mb-8">
+            <div className="atl-divider mb-3">
                 <span>[05] // Byzantine Consensus Mesh · 14 Engines · 12 Layers</span>
             </div>
+            <p className="atl-mono text-xs sm:text-sm text-white/60 mb-8 max-w-3xl">
+                <span className="text-[color:var(--atl-secondary)]">In plain English → </span>
+                14 independent validators must reach 99.5% agreement before any data is accepted. Even if a few nodes are hacked or fail, the truth still gets through.
+            </p>
             <div className="atl-card">
                 <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
                     <div>
@@ -569,9 +584,13 @@ function SeriesA({ cert }) {
             className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28 scroll-mt-24"
             data-testid="series-a-section"
         >
-            <div className="atl-divider mb-8">
+            <div className="atl-divider mb-3">
                 <span>[06] // Series A Readout</span>
             </div>
+            <p className="atl-mono text-xs sm:text-sm text-white/60 mb-8 max-w-3xl">
+                <span className="text-[color:var(--atl-secondary)]">In plain English → </span>
+                Raising $2.5M to scale into a $155B market. Path to $55M revenue by Year 3, targeting a $300–500M exit.
+            </p>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 <div className="lg:col-span-1 atl-card">
@@ -812,9 +831,13 @@ function HardwareEngine({ cert }) {
             className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 mt-28"
             data-testid="hardware-section"
         >
-            <div className="atl-divider mb-8">
+            <div className="atl-divider mb-3">
                 <span>[11] // Hardware Build Engine · espVmark on ESP32-C6</span>
             </div>
+            <p className="atl-mono text-xs sm:text-sm text-white/60 mb-8 max-w-3xl">
+                <span className="text-[color:var(--atl-secondary)]">In plain English → </span>
+                A dedicated physical hardware board that auto-builds, flashes, and verifies every code change. That&apos;s why we ship 4× faster than competitors.
+            </p>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
                 {/* Left: board diagram */}
@@ -876,6 +899,8 @@ function HardwareEngine({ cert }) {
                             ))}
                         </ul>
                     </div>
+
+                    <UplinkProbe url="http://localhost:5555" intervalMs={3000} />
 
                     <div className="grid grid-cols-2 gap-3">
                         <div className="atl-card" style={{ padding: "0.9rem" }}>
