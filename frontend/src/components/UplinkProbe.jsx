@@ -1,5 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 
+// --- status → visual mapping helpers (extracted from nested ternaries)
+const STATUS_COLOR = {
+    LOCKED: "var(--atl-primary)",
+    DEGRADED: "var(--atl-secondary)",
+    PROBING: "rgba(255,255,255,0.7)",
+    SIGNAL_LOSS: "var(--atl-glitch)",
+};
+const STATUS_LABEL = {
+    LOCKED: "SIGNAL LOCKED",
+    DEGRADED: "SIGNAL DEGRADED",
+    PROBING: "PROBING UPLINK…",
+    SIGNAL_LOSS: "SIGNAL LOSS · UPLINK OFFLINE",
+};
+const isAnimated = (s) => s === "LOCKED" || s === "PROBING";
+
 /**
  * Client-side uplink probe. Polls the given URL from the visitor's browser.
  * Works when visitor is on the same machine broadcasting the port (demos, local dev).
@@ -50,21 +65,9 @@ export default function UplinkProbe({ url = "http://localhost:5555", intervalMs 
         };
     }, [url, intervalMs]);
 
-    const color =
-        state.status === "LOCKED" ? "var(--atl-primary)"
-        : state.status === "DEGRADED" ? "var(--atl-secondary)"
-        : state.status === "PROBING" ? "rgba(255,255,255,0.7)"
-        : "var(--atl-glitch)";
-
-    const dotAnim = state.status === "LOCKED" || state.status === "PROBING"
-        ? "atl-pulse 1.4s ease-in-out infinite"
-        : "none";
-
-    const label =
-        state.status === "LOCKED" ? "SIGNAL LOCKED"
-        : state.status === "DEGRADED" ? "SIGNAL DEGRADED"
-        : state.status === "PROBING" ? "PROBING UPLINK…"
-        : "SIGNAL LOSS · UPLINK OFFLINE";
+    const color = STATUS_COLOR[state.status] || STATUS_COLOR.SIGNAL_LOSS;
+    const dotAnim = isAnimated(state.status) ? "atl-pulse 1.4s ease-in-out infinite" : "none";
+    const label = STATUS_LABEL[state.status] || STATUS_LABEL.SIGNAL_LOSS;
 
     const displayUrl = url.replace(/^https?:\/\//, "");
 
