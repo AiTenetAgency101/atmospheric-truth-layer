@@ -5,6 +5,7 @@ import MatrixRain from "@/components/MatrixRain";
 import CountUp from "@/components/CountUp";
 import LiveHash from "@/components/LiveHash";
 import UplinkProbe from "@/components/UplinkProbe";
+import GenesisChat from "@/components/GenesisChat";
 
 const EarthGlobe = lazy(() => import("@/components/EarthGlobe"));
 
@@ -1086,6 +1087,7 @@ function App() {
                 <HardwareEngine cert={cert} />
                 <Affirmation />
                 <Footer />
+                <GenesisChat />
             </div>
         </div>
     );

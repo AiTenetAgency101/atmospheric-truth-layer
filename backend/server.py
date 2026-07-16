@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter
+from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,6 +10,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Dict, Any
 import uuid
 from datetime import datetime, timezone
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 
 
 ROOT_DIR = Path(__file__).parent
@@ -288,6 +290,54 @@ async def create_status_check(payload: StatusCheckCreate):
     doc['timestamp'] = doc['timestamp'].isoformat()
     await db.status_checks.insert_one(doc)
     return status_obj
+
+
+# ============================================================================
+# Genesis Engine chat — Gemini 3 Flash via Emergent Universal Key
+# ============================================================================
+_ATL_SYSTEM_PROMPT = f"""You are the Genesis Engine — the on-site AI oracle for the Atmospheric Truth Layer (ATL) v1.0.0-minted.
+
+Speak in a concise, confident, slightly cyberpunk-terminal tone. Use short paragraphs. Never invent facts beyond what's below.
+
+KNOWN FACTS (do not contradict):
+- Minted: 2026-04-23T07:53:50.5144990+10:00 (Genesis, ledger position 0)
+- 4 engines: Engine 365-Days (37,445,846 cycles), Ultimate Engine (Byzantine K=0.995), Tenet Agency 101 (641,642,364 ticks), Witness Ledger (37M+ tiles)
+- 4 satellite witnesses: BOM (Australia), Himawari-8 (Japan), GOES-16 (USA), Meteosat (Europe)
+- Series A: $2.5M ask, $12.5M post-money, $3.18M Y1 rev, $26.35M Y2, $55.1M Y3, exit $300–500M, TAM $155B+
+- Hardware: espVmark on ESP32-C6, iterates 4.2× faster than average contestant
+- Tagline: "The sky doesn't lie. Satellites don't sleep. Math doesn't break."
+
+If asked something you don't know, say so — never make up numbers, dates, or hashes."""
+
+# session_id -> LlmChat instance
+_CHAT_SESSIONS: Dict[str, LlmChat] = {}
+
+
+class ChatRequest(BaseModel):
+    session_id: str
+    message: str
+
+
+def _get_chat(session_id: str) -> LlmChat:
+    if session_id not in _CHAT_SESSIONS:
+        api_key = os.environ.get("EMERGENT_LLM_KEY", "")
+        _CHAT_SESSIONS[session_id] = LlmChat(
+            api_key=api_key,
+            session_id=session_id,
+            system_message=_ATL_SYSTEM_PROMPT,
+        ).with_model("gemini", "gemini-3-flash-preview")
+    return _CHAT_SESSIONS[session_id]
+
+
+@api_router.post("/chat")
+async def chat_endpoint(payload: ChatRequest):
+    chat = _get_chat(payload.session_id)
+    try:
+        reply = await chat.send_message(UserMessage(text=payload.message))
+        return {"reply": str(reply)}
+    except Exception as exc:
+        logger.exception("chat error")
+        return {"reply": f"[ERROR] {str(exc)[:200]}"}
 
 
 @api_router.get("/status", response_model=List[StatusCheck])
