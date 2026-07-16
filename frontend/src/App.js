@@ -59,7 +59,7 @@ function Ticker({ cert }) {
         "RFC3161 TIMESTAMP VERIFIED",
         "FIREWALL DOCTRINE // TENET AGENCY 101",
         "XYO BOUND-WITNESS ACTIVE",
-        "SERIES A :: $2.5M ASK // $12.5M POST-MONEY",
+        "SERIES A :: DETAILS UNDER NDA",
     ];
     const buildRow = (prefix) => items.map((t) => (
         <span key={`${prefix}-${t}`} className="text-[0.72rem] atl-mono uppercase tracking-[0.28em]">
@@ -565,20 +565,15 @@ function ByzantineMatrix() {
 function SeriesA({ cert }) {
     if (!cert) return null;
     const s = cert.series_a;
-    const fmt = (n) => {
-        if (n >= 1_000_000_000) return `$${(n / 1_000_000_000).toFixed(1)}B`;
-        if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
-        return `$${n.toLocaleString()}`;
-    };
 
     const rows = [
-        { label: "Funding Ask", value: fmt(s.funding_ask_usd) },
-        { label: "Post-Money Valuation", value: fmt(s.post_money_valuation_usd) },
-        { label: "Market TAM", value: fmt(s.market_tam_usd) },
-        { label: "Year 1 Revenue", value: fmt(s.year_1_revenue_usd) },
-        { label: "Year 2 Revenue", value: fmt(s.year_2_revenue_usd) },
-        { label: "Year 3 Revenue", value: fmt(s.year_3_revenue_usd) },
-        { label: "Exit Path", value: s.exit_range_usd },
+        { label: "Funding Ask", value: "ON REQUEST" },
+        { label: "Post-Money Valuation", value: "ON REQUEST" },
+        { label: "Market TAM", value: "SUBSTANTIAL · UNDER NDA" },
+        { label: "Year 1 Revenue", value: "PROJECTIONS UNDER NDA" },
+        { label: "Year 2 Revenue", value: "PROJECTIONS UNDER NDA" },
+        { label: "Year 3 Revenue", value: "PROJECTIONS UNDER NDA" },
+        { label: "Exit Path", value: "STRATEGIC · UNDER NDA" },
         { label: "Status", value: s.status.replace(/_/g, " ") },
     ];
     return (
@@ -592,18 +587,18 @@ function SeriesA({ cert }) {
             </div>
             <p className="atl-mono text-xs sm:text-sm text-white/60 mb-8 max-w-3xl">
                 <span className="text-[color:var(--atl-secondary)]">In plain English → </span>
-                Raising $2.5M to scale into a $155B market. Path to $55M revenue by Year 3, targeting a $300–500M exit.
+                Raising to scale into a large, verifiable-truth market. Financials, terms, and exit strategy are shared under NDA — book a meeting.
             </p>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 <div className="lg:col-span-1 atl-card">
                     <div className="atl-label">Fundraise</div>
-                    <div className="atl-sectiontitle mt-2 text-white">$2.5M ASK</div>
+                    <div className="atl-sectiontitle mt-2 text-white">SERIES A / OPEN</div>
                     <div className="atl-mono text-xs text-white/60 mt-2">Production-ready infrastructure</div>
                     <div className="mt-5 space-y-2 atl-mono text-sm text-white/80">
-                        <div>→ $155B+ Addressable Market</div>
-                        <div>→ $300–500M Exit Range</div>
-                        <div>→ 7× Growth Year 1 → Year 2</div>
+                        <div>→ Terms shared under NDA</div>
+                        <div>→ Strategic exit path defined</div>
+                        <div>→ Multi-year growth model available</div>
                     </div>
                     <button className="atl-btn mt-7 w-full justify-center" data-testid="book-investor-call">
                         ▶ Book Investor Call

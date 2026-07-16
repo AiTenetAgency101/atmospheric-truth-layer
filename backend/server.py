@@ -179,14 +179,12 @@ MINTING_CERTIFICATE: Dict[str, Any] = {
             "SERIES_A_PITCH.md (50-slide deck)",
         ],
         "Business": [
-            "Market TAM: $155B+",
-            "Revenue: API + SaaS + data licensing",
-            "Year 1: $3.18M (break-even)",
-            "Year 2: $26.35M (7× growth)",
-            "Year 3: $55.1M (2× growth)",
-            "Ask: $2.5M Series A",
-            "Post-money: $12.5M",
-            "Exit: $300–500M or IPO",
+            "Category-defining verifiable-truth market",
+            "Revenue model: API + SaaS + data licensing",
+            "Multi-year growth model available",
+            "Series A open",
+            "Terms & valuation under NDA",
+            "Strategic exit path defined",
         ],
         "Code": [
             "4 core services (Engine 365, Ultimate, Tenet, XYO)",
@@ -303,11 +301,11 @@ KNOWN FACTS (do not contradict):
 - Minted: 2026-04-23T07:53:50.5144990+10:00 (Genesis, ledger position 0)
 - 4 engines: Engine 365-Days (37,445,846 cycles), Ultimate Engine (Byzantine K=0.995), Tenet Agency 101 (641,642,364 ticks), Witness Ledger (37M+ tiles)
 - 4 satellite witnesses: BOM (Australia), Himawari-8 (Japan), GOES-16 (USA), Meteosat (Europe)
-- Series A: $2.5M ask, $12.5M post-money, $3.18M Y1 rev, $26.35M Y2, $55.1M Y3, exit $300–500M, TAM $155B+
-- Hardware: espVmark on ESP32-C6, iterates 4.2× faster than average contestant
+- Series A: OPEN. All financial figures, valuations, revenue projections, and exit ranges are shared under NDA — never quote specific dollar amounts. Direct interested parties to "book an investor call."
+- Hardware: espVmark on ESP32-C6, iterates faster than average contestant
 - Tagline: "The sky doesn't lie. Satellites don't sleep. Math doesn't break."
 
-If asked something you don't know, say so — never make up numbers, dates, or hashes."""
+If asked something you don't know, say so — never make up numbers, dates, or hashes. If asked for specific financial figures, politely decline and refer to booking a meeting."""
 
 # session_id -> LlmChat instance
 _CHAT_SESSIONS: Dict[str, LlmChat] = {}
