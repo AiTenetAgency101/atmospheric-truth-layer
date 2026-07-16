@@ -17,6 +17,13 @@ export default function GenesisChat() {
     const sessionRef = useRef(null);
     const scrollRef = useRef(null);
 
+    const SUGGESTIONS = [
+        "How is K=0.995 computed?",
+        "Explain the espVmark hardware root of trust.",
+        "Show me the assistive-tech use case.",
+        "What is the Series A ask?",
+    ];
+
     if (!sessionRef.current) {
         sessionRef.current =
             (typeof crypto !== "undefined" && crypto.randomUUID)
@@ -28,8 +35,8 @@ export default function GenesisChat() {
         if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }, [messages, open]);
 
-    const send = async () => {
-        const text = input.trim();
+    const send = async (overrideText) => {
+        const text = (overrideText ?? input).trim();
         if (!text || busy) return;
         setInput("");
         setMessages((m) => [...m, { role: "user", text }, { role: "assistant", text: "…" }]);
@@ -129,6 +136,44 @@ export default function GenesisChat() {
                                 </div>
                             </div>
                         ))}
+
+                        {messages.length <= 1 && !busy && (
+                            <div className="mt-4" data-testid="genesis-chat-suggestions">
+                                <div className="atl-label" style={{ fontSize: "0.58rem", marginBottom: "0.5rem" }}>
+                                    ▸ suggested queries
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                                    {SUGGESTIONS.map((s, idx) => (
+                                        <button
+                                            key={s}
+                                            data-testid={`genesis-chat-suggestion-${idx}`}
+                                            onClick={() => send(s)}
+                                            className="atl-mono"
+                                            style={{
+                                                textAlign: "left",
+                                                padding: "0.5rem 0.7rem",
+                                                background: "rgba(0,255,65,0.05)",
+                                                border: "1px solid rgba(0,255,65,0.25)",
+                                                color: "rgba(0,255,65,0.85)",
+                                                fontSize: "0.72rem",
+                                                cursor: "pointer",
+                                                transition: "all 0.2s",
+                                            }}
+                                            onMouseOver={(e) => {
+                                                e.currentTarget.style.background = "rgba(0,255,65,0.15)";
+                                                e.currentTarget.style.borderColor = "rgba(0,255,65,0.6)";
+                                            }}
+                                            onMouseOut={(e) => {
+                                                e.currentTarget.style.background = "rgba(0,255,65,0.05)";
+                                                e.currentTarget.style.borderColor = "rgba(0,255,65,0.25)";
+                                            }}
+                                        >
+                                            → {s}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <form
