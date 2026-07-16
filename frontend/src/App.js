@@ -6,6 +6,7 @@ import CountUp from "@/components/CountUp";
 import LiveHash from "@/components/LiveHash";
 import UplinkProbe from "@/components/UplinkProbe";
 import GenesisChat from "@/components/GenesisChat";
+import LiveTelemetry from "@/components/LiveTelemetry";
 
 const EarthGlobe = lazy(() => import("@/components/EarthGlobe"));
 
@@ -587,7 +588,7 @@ function SeriesA({ cert }) {
             data-testid="series-a-section"
         >
             <div className="atl-divider mb-3">
-                <span>[06] // Series A Readout</span>
+                <span>[07] // Series A Readout</span>
             </div>
             <p className="atl-mono text-xs sm:text-sm text-white/60 mb-8 max-w-3xl">
                 <span className="text-[color:var(--atl-secondary)]">In plain English → </span>
@@ -655,7 +656,7 @@ function ReadinessChecklist({ cert }) {
             data-testid="readiness-section"
         >
             <div className="atl-divider mb-8">
-                <span>[07] // Series A Readiness Checklist</span>
+                <span>[08] // Series A Readiness Checklist</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {groups.map(([label, items]) => (
@@ -703,7 +704,7 @@ function Roadmap({ cert }) {
             data-testid="roadmap-section"
         >
             <div className="atl-divider mb-8">
-                <span>[08] // What&apos;s Next · Execution Timeline</span>
+                <span>[09] // What&apos;s Next · Execution Timeline</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {cert.roadmap.map((r, i) => (
@@ -754,7 +755,7 @@ function RepoBlock({ cert }) {
             data-testid="repo-section"
         >
             <div className="atl-divider mb-8">
-                <span>[09] // Official Repository</span>
+                <span>[10] // Official Repository</span>
             </div>
             <div className="atl-card">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
@@ -1080,6 +1081,7 @@ function App() {
                 <Witnesses cert={cert} />
                 <Certificate cert={cert} />
                 <ByzantineMatrix />
+                <LiveTelemetry />
                 <SeriesA cert={cert} />
                 <ReadinessChecklist cert={cert} />
                 <Roadmap cert={cert} />
