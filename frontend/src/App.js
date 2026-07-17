@@ -59,6 +59,7 @@ function Ticker({ cert }) {
         "RFC3161 TIMESTAMP VERIFIED",
         "FIREWALL DOCTRINE // TENET AGENCY 101",
         "XYO BOUND-WITNESS ACTIVE",
+        "espVmark.MyWare · ESP32-C6",
         "SERIES A :: DETAILS UNDER NDA",
     ];
     const buildRow = (prefix) => items.map((t) => (
@@ -831,23 +832,47 @@ function HardwareEngine({ cert }) {
             data-testid="hardware-section"
         >
             <div className="atl-divider mb-3">
-                <span>[11] // Hardware Build Engine · espVmark on ESP32-C6</span>
+                <span>[11] // Hardware Build Engine · espVmark.MyWare on ESP32-C6</span>
             </div>
             <p className="atl-mono text-xs sm:text-sm text-white/60 mb-8 max-w-3xl">
                 <span className="text-[color:var(--atl-secondary)]">In plain English → </span>
-                A dedicated physical hardware board that auto-builds, flashes, and verifies every code change. That&apos;s why we ship 4× faster than competitors.
+                A dedicated physical hardware board — <span className="text-[color:var(--atl-primary)]">espVmark.MyWare</span> — that auto-builds, flashes, and verifies every code change. That&apos;s why we ship faster than competitors.
             </p>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
                 {/* Left: board diagram */}
-                <div className="lg:col-span-3 atl-card atl-sweep">
-                    <div className="flex items-center justify-between mb-4">
+                <div
+                    className="lg:col-span-3 atl-card atl-sweep"
+                    style={{
+                        boxShadow: "0 0 32px rgba(0,255,65,0.25), inset 0 0 40px rgba(0,255,65,0.04)",
+                        borderColor: "rgba(0,255,65,0.55)",
+                    }}
+                >
+                    <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
                         <div>
                             <div className="atl-label text-[color:var(--atl-secondary)]">
                                 {h.role}
                             </div>
-                            <div className="mt-1 text-white text-xl uppercase tracking-wider font-bold">
-                                {h.name}
+                            <div className="mt-1 flex items-baseline gap-2 flex-wrap">
+                                <div
+                                    className="text-white text-2xl sm:text-3xl uppercase tracking-wider font-black"
+                                    style={{ textShadow: "0 0 14px rgba(0,255,65,0.5)" }}
+                                    data-testid="hardware-brand"
+                                >
+                                    espVmark
+                                </div>
+                                <div
+                                    className="atl-mono text-sm sm:text-base uppercase tracking-[0.35em] px-2 py-0.5 border"
+                                    style={{
+                                        color: "var(--atl-secondary)",
+                                        borderColor: "rgba(0,255,255,0.55)",
+                                        background: "rgba(0,255,255,0.08)",
+                                        textShadow: "0 0 10px rgba(0,255,255,0.5)",
+                                    }}
+                                    data-testid="hardware-myware-tag"
+                                >
+                                    .MyWare
+                                </div>
                             </div>
                         </div>
                         <a
