@@ -818,7 +818,7 @@ function HardwareEngine({ cert }) {
    ●──┤  ESP32-C6  ·  ${boardRev.padEnd(20, " ")}  ├──●
    ●──┤                                             ├──●
    ●──┤   ╔═══════════════════════════════════╗     ├──●
-   ●──┤   ║  espVmark ⟨⟩ BUILD ENGINE         ║     ├──●
+   ●──┤   ║  espVmark.MyWare ⟨⟩ BUILD ENGINE  ║     ├──●
    ●──┤   ║  ${fwVersion.padEnd(28, " ")}   ║     ├──●
    ●──┤   ║  MANIFEST ${manifestHash}         ║     ├──●
    ●──┤   ╚═══════════════════════════════════╝     ├──●
