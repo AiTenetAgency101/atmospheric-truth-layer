@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  weather-stream:
+    build: .
+    container_name: aitenet-weather-stream
+    ports:
+      - "9099:9099"
+    environment:
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY:-}
+      LOCATION: ${LOCATION:-Sydney}
+      PORT: 9099
+    restart: unless-stopped
