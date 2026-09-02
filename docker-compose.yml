@@ -1,13 +1,29 @@
 version: '3.8'
 
 services:
-  weather-stream:
+  jarvis-oracle:
     build: .
-    container_name: aitenet-weather-stream
+    container_name: jarvis-atmospheric-truth-oracle
     ports:
-      - "9099:9099"
+      - "3001:3001"
     environment:
-      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY:-}
-      LOCATION: ${LOCATION:-Sydney}
-      PORT: 9099
+      LOCATION: Sydney
+      LATITUDE: -33.8688
+      LONGITUDE: 151.2093
+      YOUTUBE_STREAM_KEY: 5ce6-q7bz-01hq-3yhp-etbx
+      PORT: 3001
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    volumes:
+      - ./jarvis-oracle.js:/app/jarvis-oracle.js
+      - ./package.json:/app/package.json
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
