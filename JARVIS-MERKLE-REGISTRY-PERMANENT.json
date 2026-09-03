@@ -1,0 +1,24 @@
+[
+  {
+    "sequence": 1,
+    "timestamp_utc": "2026-09-03T11:12:10.592735Z",
+    "merkle_root": "a0ba0afd6cf847cba7aafca8ab0810f0d8153c697eb3b1bcf82dc54903bf7836",
+    "chain_seal": "fdd642d2671578d20a3b53eed165f0c054b323fafcd38875bced2d654114e4e8",
+    "previous_seal": "GENESIS",
+    "metadata": {
+      "version": "2.0.0-MANDELBROT-FINAL",
+      "system": "JARVIS"
+    }
+  },
+  {
+    "sequence": 2,
+    "timestamp_utc": "2026-09-03T17:38:43.238822Z",
+    "merkle_root": "a0ba0afd6cf847cba7aafca8ab0810f0d8153c697eb3b1bcf82dc54903bf7836",
+    "chain_seal": "18cd096f31a5213c2b66d89f528c4a0c4cd1f46fdb7231183099a2ac8258de05",
+    "previous_seal": "fdd642d2671578d20a3b53eed165f0c054b323fafcd38875bced2d654114e4e8",
+    "metadata": {
+      "version": "2.0.0-MANDELBROT-FINAL",
+      "system": "JARVIS"
+    }
+  }
+]

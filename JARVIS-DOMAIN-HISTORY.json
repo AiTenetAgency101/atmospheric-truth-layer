@@ -1,0 +1,19 @@
+[
+  {
+    "sequence": 1,
+    "timestamp_utc": "2026-09-03T11:20:52.411611Z",
+    "domain": "yourname.crypto",
+    "merkle_root": "a0ba0afd6cf847cba7aafca8ab0810f0d8153c697eb3b1bcf82dc54903bf7836",
+    "chain_seal": "fdd642d2671578d20a3b53eed165f0c054b323fafcd38875bced2d654114e4e8",
+    "k_value": 0.9990768513,
+    "status": "READY_TO_SUBMIT",
+    "instructions": [
+      "1. Go to https://unstoppabledomains.com/manage",
+      "2. Select domain: yourname.crypto",
+      "3. Click \"Manage Records\"",
+      "4. Add custom record with the data below",
+      "5. Confirm on blockchain (costs small gas fee)",
+      "6. Your atmospheric truth is now PERMANENT on the blockchain"
+    ]
+  }
+]
